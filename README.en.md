@@ -40,11 +40,12 @@ Adding new agents is easy via the plugin architecture — contributions welcome!
 ## Requirements
 
 - **Node.js** ≥ 20
+- **tmux** — required for two-way interaction (auto-installed on first run)
 - **Telegram Bot Token** — create from [@BotFather](https://t.me/BotFather)
 
 ## Getting Started
 
-### Option 1: npx (recommended — zero install)
+### Option 1: npx (zero install)
 
 ```bash
 npx -y ccpoke
@@ -52,20 +53,11 @@ npx -y ccpoke
 
 First run → auto setup → start bot. One command, that's it.
 
-### Option 2: Global install (daily use, faster startup)
+### Option 2: Global install (recommended — faster startup)
 
 ```bash
 npm i -g ccpoke
 ccpoke
-```
-
-### Option 3: Clone repo (for development)
-
-```bash
-git clone https://github.com/kaida-palooza/ccpoke.git
-cd ccpoke
-pnpm install
-pnpm dev
 ```
 
 The setup wizard will guide you step by step:
@@ -107,22 +99,6 @@ The setup wizard will guide you step by step:
 └  🎉 Setup complete!
 ```
 
-<details>
-<summary>Manual setup (without wizard)</summary>
-
-Create `~/.ccpoke/config.json`:
-
-```json
-{
-  "telegram_bot_token": "123456:ABC-xxx",
-  "user_id": 123456789,
-  "hook_port": 9377
-}
-```
-
-Then run `ccpoke setup` to install the hook and register your chat ID.
-
-</details>
 
 ## Usage
 
@@ -135,11 +111,50 @@ npx -y ccpoke
 # Or global install
 ccpoke
 
-# Or local dev
-pnpm dev
 ```
 
 Once running, use Claude Code / Codex CLI / Cursor CLI as usual → notifications will arrive on Telegram.
+
+### View multi-agent sessions
+
+When running multiple agents in parallel, ccpoke creates a tmux session to manage them. To view:
+
+```bash
+# Regular terminal
+tmux attach
+
+# iTerm2 (native integration)
+tmux -CC attach
+```
+
+### Register Projects
+
+Register projects to create new agent sessions directly from Telegram — no need to open your computer.
+
+**Step 1: Add a project via CLI**
+
+```bash
+ccpoke project
+```
+
+```
+┌  📂 Manage Projects
+│
+◇  Select action
+│  ➕ Add new project
+│
+◇  Project path
+│  /path/to/your/project
+│
+◇  Project name
+│  my-project
+│
+└  ✅ Added: my-project → /path/to/your/project
+```
+
+**Step 2: Create agent sessions from Telegram**
+
+Send `/projects` on Telegram → pick a project → choose agent (Claude Code / Codex CLI / Cursor CLI) → agent starts in a new tmux pane.
 
 ### Telegram Commands
 

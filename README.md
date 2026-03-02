@@ -1,74 +1,66 @@
-# 🐾 ccpoke — AI Agent Notification Bridge
+# 🐾 ccpoke — Cầu nối thông báo AI Agent
 
 [English](./README.en.md) · [中文](./README.zh.md)
 
-> Tương tác 2 chiều với Claude Code, Codex CLI, Cursor CLI và nhiều AI agent khác qua Telegram — code mọi lúc mọi nơi.
+> Tương tác 2 chiều với Claude Code, Codex CLI, Cursor CLI và nhiều AI agent khác qua Telegram — lập trình mọi lúc mọi nơi.
 
 ---
 
 ## Vấn đề giải quyết
 
-Bạn đang dùng Claude Code, Codex CLI hoặc Cursor CLI trên máy tính. Ra ngoài cầm điện thoại nhưng không biết AI agent đã xong chưa, muốn gửi prompt thêm mà không cần mở laptop.
+Bạn đang dùng Claude Code, Codex CLI hoặc Cursor CLI trên máy tính. Ra ngoài cầm điện thoại nhưng không biết AI agent đã xong chưa, muốn gửi thêm yêu cầu mà không cần mở laptop.
 
-**ccpoke** là cầu nối 2 chiều giữa AI agents và Telegram — nhận thông báo, gửi prompt, trả lời câu hỏi, quản lý nhiều session — tất cả từ điện thoại.
+**ccpoke** là cầu nối 2 chiều giữa AI agent và Telegram — nhận thông báo, gửi yêu cầu, trả lời câu hỏi, quản lý nhiều phiên làm việc — tất cả từ điện thoại.
 
 ```
-AI agent xong response
+AI agent hoàn thành phản hồi
         ↓
-  Stop Hook trigger
+  Stop Hook kích hoạt
         ↓
-  ccpoke nhận event
+  ccpoke nhận sự kiện
         ↓
-  Telegram notification 📱
+  Thông báo Telegram 📱
 ```
 
-## Hỗ trợ Agent
+## Agent hỗ trợ
 
 | | Claude Code | Codex CLI | Cursor CLI |
 |---|---|---|---|
-| Notification Telegram | ✅ macOS · Linux · Windows | ✅ macOS · Linux · Windows | ✅ macOS · Linux · Windows |
-| Chat 2 chiều (Telegram ↔ Agent) | ✅ macOS · Linux | ✅ macOS · Linux | ✅ macOS · Linux |
+| Thông báo Telegram | ✅ macOS · Linux · Windows | ✅ macOS · Linux · Windows | ✅ macOS · Linux · Windows |
+| Trò chuyện 2 chiều (Telegram ↔ Agent) | ✅ macOS · Linux | ✅ macOS · Linux | ✅ macOS · Linux |
 
-Thêm agent mới qua kiến trúc plugin — contributions welcome!
+Thêm agent mới qua kiến trúc plugin — hoan nghênh đóng góp!
 
 ## Tính năng
 
-- 🔔 **Thông báo đẩy** — AI agent xong → Telegram nhận tin ngay, không polling, không delay
-- 💬 **Tương tác 2 chiều** — chat với AI agent từ Telegram, xem sessions, gửi prompt, trả lời câu hỏi, phê duyệt quyền
-- 🔀 **Đa phiên** — quản lý nhiều session AI agent cùng lúc, chuyển đổi nhanh, giám sát song song
+- 🔔 **Thông báo đẩy** — AI agent xong → Telegram nhận tin ngay, không cần kiểm tra liên tục, không trễ
+- 💬 **Tương tác 2 chiều** — trò chuyện với AI agent từ Telegram, xem phiên làm việc, gửi yêu cầu, trả lời câu hỏi, phê duyệt quyền
+- 🔀 **Đa phiên** — quản lý nhiều phiên AI agent cùng lúc, chuyển đổi nhanh, giám sát song song
 
 ## Yêu cầu
 
 - **Node.js** ≥ 20
+- **tmux** — cần cho tương tác 2 chiều (tự cài khi chạy lần đầu)
 - **Telegram Bot Token** — tạo từ [@BotFather](https://t.me/BotFather)
 
 ## Bắt đầu
 
-### Cách 1: npx (khuyến nghị — zero install)
+### Cách 1: npx (không cần cài đặt)
 
 ```bash
 npx -y ccpoke
 ```
 
-Lần đầu chạy → tự động setup → start bot. Một lệnh duy nhất.
+Lần đầu chạy → tự động thiết lập → khởi động bot. Một lệnh duy nhất.
 
-### Cách 2: Global install (dùng hàng ngày, khởi động nhanh hơn)
+### Cách 2: Cài đặt toàn cục (khuyến nghị — khởi động nhanh hơn)
 
 ```bash
 npm i -g ccpoke
 ccpoke
 ```
 
-### Cách 3: Clone repo (cho development)
-
-```bash
-git clone https://github.com/kaida-palooza/ccpoke.git
-cd ccpoke
-pnpm install
-pnpm dev
-```
-
-Setup wizard sẽ hướng dẫn từng bước:
+Trình hướng dẫn cài đặt sẽ dẫn bạn từng bước:
 
 ```
 ┌  🤖 ccpoke setup
@@ -107,57 +99,80 @@ Setup wizard sẽ hướng dẫn từng bước:
 └  🎉 Setup complete!
 ```
 
-<details>
-<summary>Thiết lập thủ công (không dùng wizard)</summary>
-
-Tạo file `~/.ccpoke/config.json`:
-
-```json
-{
-  "telegram_bot_token": "123456:ABC-xxx",
-  "user_id": 123456789,
-  "hook_port": 9377
-}
-```
-
-Sau đó chạy `ccpoke setup` để cài hook và đăng ký chat ID.
-
-</details>
 
 ## Sử dụng
 
 ### Khởi động bot
 
 ```bash
-# npx (zero install)
+# npx (không cần cài đặt)
 npx -y ccpoke
 
-# Hoặc global install
+# Hoặc cài đặt toàn cục
 ccpoke
 
-# Hoặc local dev
-pnpm dev
 ```
 
-Bot chạy xong → dùng Claude Code / Codex CLI / Cursor CLI bình thường → notification tự đến Telegram.
+Bot chạy xong → dùng Claude Code / Codex CLI / Cursor CLI bình thường → thông báo tự đến Telegram.
 
-### Telegram Commands
+### Xem phiên làm việc đa agent
 
-| Command     | Chức năng                                         |
-|-------------|---------------------------------------------------|
-| `/start`    | Đăng ký lại chat (tự động khi setup, ít khi cần) |
-| `/sessions` | Xem danh sách sessions AI agent đang hoạt động    |
-| `/projects` | Xem danh sách projects và mở session mới          |
+Khi chạy nhiều agent song song, ccpoke tạo phiên tmux để quản lý. Để xem:
 
-### Notification mẫu
+```bash
+# Cửa sổ dòng lệnh thường
+tmux attach
+
+# iTerm2 (tích hợp gốc)
+tmux -CC attach
+```
+
+### Đăng ký dự án
+
+Đăng ký dự án để tạo phiên agent mới trực tiếp từ Telegram — không cần mở máy tính.
+
+**Bước 1: Thêm dự án qua dòng lệnh**
+
+```bash
+ccpoke project
+```
 
 ```
-🤖 Claude Code Response
-📂 my-project | ⏱ 45s
+┌  📂 Quản lý dự án
+│
+◇  Chọn thao tác
+│  ➕ Thêm dự án mới
+│
+◇  Đường dẫn dự án
+│  /path/to/your/project
+│
+◇  Tên dự án
+│  my-project
+│
+└  ✅ Đã thêm: my-project → /path/to/your/project
+```
 
-Đã sửa bug authentication trong login.go. Thay đổi chính:
-- Fix missing error check ở dòng 42
-- Thêm input validation...
+**Bước 2: Tạo phiên agent từ Telegram**
+
+Gửi `/projects` trên Telegram → chọn dự án → chọn agent (Claude Code / Codex CLI / Cursor CLI) → agent khởi chạy trong ô tmux mới.
+
+### Lệnh Telegram
+
+| Lệnh        | Chức năng                                                   |
+|-------------|-------------------------------------------------------------|
+| `/start`    | Đăng ký lại cuộc trò chuyện (tự động khi cài đặt, ít cần)  |
+| `/sessions` | Xem danh sách phiên AI agent đang hoạt động                 |
+| `/projects` | Xem danh sách dự án và mở phiên mới                         |
+
+### Thông báo mẫu
+
+```
+🤖 Phản hồi Claude Code
+📂 my-project | ⏱ 45 giây
+
+Đã sửa lỗi xác thực trong login.go. Thay đổi chính:
+- Sửa thiếu kiểm tra lỗi ở dòng 42
+- Thêm kiểm tra đầu vào...
 ```
 
 ## Gỡ cài đặt
@@ -177,11 +192,11 @@ ccpoke uninstall
 └  ccpoke uninstalled
 ```
 
-## License
+## Giấy phép
 
 MIT
 
-## Contributors
+## Người đóng góp
 <a href="https://github.com/lethai2597">
   <img src="https://github.com/lethai2597.png" width="50" />
 </a>
