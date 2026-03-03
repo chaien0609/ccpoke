@@ -177,9 +177,11 @@ export const vi: TranslationKeys = {
   },
   versionCheck: {
     updateAvailable: "Có bản cập nhật mới! {current} → {latest}",
+    updating: "Đang cập nhật...",
     runToUpdate: "Chạy `{command}` để cập nhật",
     updatePrompt: "Cập nhật lên v{latest}?",
     continueWithoutUpdate: "Tiếp tục với v{current}",
+    restarting: "Đang khởi động lại...",
   },
   tmux: {
     notAvailable: "Chưa cài tmux — chat 2 chiều tắt, notification vẫn hoạt động",
@@ -272,5 +274,6 @@ export const vi: TranslationKeys = {
     updated: 'Đã cập nhật "{name}" → {path}',
     confirmRemove: 'Xóa "{name}"?',
     removed: 'Đã xóa "{name}"',
+    exit: "Thoát",
   },
 };

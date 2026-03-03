@@ -177,9 +177,11 @@ export const en: TranslationKeys = {
   },
   versionCheck: {
     updateAvailable: "Update available! {current} → {latest}",
+    updating: "Updating...",
     runToUpdate: "Run `{command}` to update",
     updatePrompt: "Update to v{latest}?",
     continueWithoutUpdate: "Continue with v{current}",
+    restarting: "Restarting...",
   },
   tmux: {
     notAvailable: "tmux not installed — 2-way chat disabled, notifications still work",
@@ -272,5 +274,6 @@ export const en: TranslationKeys = {
     updated: 'Updated "{name}" → {path}',
     confirmRemove: 'Remove "{name}"?',
     removed: 'Removed "{name}"',
+    exit: "Exit",
   },
 };

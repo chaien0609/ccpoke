@@ -176,9 +176,11 @@ export const zh: TranslationKeys = {
   },
   versionCheck: {
     updateAvailable: "发现新版本！{current} → {latest}",
+    updating: "正在更新...",
     runToUpdate: "运行 `{command}` 进行更新",
     updatePrompt: "更新到 v{latest}？",
     continueWithoutUpdate: "继续使用 v{current}",
+    restarting: "正在重新启动...",
   },
   tmux: {
     notAvailable: "未安装 tmux — 双向聊天已禁用，通知仍正常工作",
@@ -271,5 +273,6 @@ export const zh: TranslationKeys = {
     updated: '已更新 "{name}" → {path}',
     confirmRemove: '删除 "{name}"？',
     removed: '已删除 "{name}"',
+    exit: "退出",
   },
 };

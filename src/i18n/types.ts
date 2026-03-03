@@ -163,9 +163,11 @@ export interface TranslationKeys {
   };
   versionCheck: {
     updateAvailable: string;
+    updating: string;
     runToUpdate: string;
     updatePrompt: string;
     continueWithoutUpdate: string;
+    restarting: string;
   };
   tmux: {
     notAvailable: string;
@@ -258,5 +260,6 @@ export interface TranslationKeys {
     updated: string;
     confirmRemove: string;
     removed: string;
+    exit: string;
   };
 }
