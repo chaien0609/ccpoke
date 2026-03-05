@@ -9,19 +9,19 @@ interface Props {
 const { locale } = Astro.props;
 
 const leftNodes = [
+  { name: "Telegram", icon: icons.brandTelegram, active: true },
+  { name: "Discord", icon: icons.brandDiscord, active: true },
+  { name: "Slack", icon: icons.brandSlack, active: true },
+  { name: "Zalo", icon: icons.brandZalo, active: false },
+];
+
+const rightNodes = [
   { name: "Claude Code", icon: icons.brandClaude, active: true },
   { name: "Cursor CLI", icon: icons.brandCursor, active: true },
   { name: "Gemini CLI", icon: icons.brandGemini, active: true },
   { name: "Antigravity", icon: icons.brandGoogle, active: false },
   { name: "Codex CLI", icon: icons.brandOpenai, active: true },
   { name: "Copilot", icon: icons.brandCopilot, active: false },
-];
-
-const rightNodes = [
-  { name: "Telegram", icon: icons.brandTelegram, active: true },
-  { name: "Discord", icon: icons.brandDiscord, active: true },
-  { name: "Slack", icon: icons.brandSlack, active: true },
-  { name: "Zalo", icon: icons.brandZalo, active: false },
 ];
 ---
 
