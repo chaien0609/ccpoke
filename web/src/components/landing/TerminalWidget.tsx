@@ -41,15 +41,15 @@ export default function TerminalWidget({ copyLabel, copiedLabel }: Props) {
   }, []);
 
   return (
-    <div class="bg-bg-code rounded-xl overflow-hidden max-w-[600px] mx-auto w-full">
-      <div class="flex items-center justify-between px-4 py-2.5 bg-bg-code-2">
+    <div class="bg-bg-code rounded-xl overflow-hidden mx-auto w-full">
+      <div class="flex items-center justify-between px-4 py-2 bg-bg-code-2">
         <div class="flex gap-[7px]">
           <i class="w-2.5 h-2.5 rounded-full block bg-[#FF5F57]" />
           <i class="w-2.5 h-2.5 rounded-full block bg-[#FEBC2E]" />
           <i class="w-2.5 h-2.5 rounded-full block bg-[#28C840]" />
         </div>
       </div>
-      <div class="flex items-center justify-between gap-4 px-5 py-4">
+      <div class="flex items-center justify-between gap-4 px-5 py-3">
         <div class="font-mono text-[0.88rem] text-term-text min-w-0">
           <span class="text-accent select-none mr-2.5">$</span>
           <span>{COMMAND.slice(0, charCount)}</span>
@@ -58,7 +58,7 @@ export default function TerminalWidget({ copyLabel, copiedLabel }: Props) {
         <button
           onClick={handleCopy}
           aria-label={copied ? copiedLabel : copyLabel}
-          class={`inline-flex items-center gap-1.5 rounded-[7px] border font-sans text-[0.78rem] font-semibold cursor-pointer shrink-0 transition-all duration-200 px-3.5 py-2.5 min-w-[44px] min-h-[44px] ${
+          class={`inline-flex items-center gap-1.5 rounded-[7px] border font-sans text-[0.75rem] font-semibold cursor-pointer shrink-0 transition-all duration-200 px-3 py-2 min-w-[44px] min-h-[44px] ${
             !typingComplete
               ? "opacity-0 pointer-events-none"
               : copied

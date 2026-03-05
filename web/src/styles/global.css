@@ -388,12 +388,12 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.06) }
 .cta-bottom__badges { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap }
 .cta-bottom__badges img { height: 22px; border-radius: 4px }
 .cta-actions { display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap }
-.cta-gh { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--color-txt); color: var(--color-bg); font-family: var(--font-sans); font-size: 0.88rem; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1) }
-.cta-gh:hover { background: var(--color-txt-2); color: var(--color-bg); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15) }
-.cta-gh svg { width: 16px; height: 16px }
-.cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; background: transparent; color: var(--color-txt-2); font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600; border: 1px solid var(--color-border); border-radius: 10px; cursor: pointer; text-decoration: none; transition: all 0.2s }
-.cta-secondary:hover { color: var(--color-txt); border-color: var(--color-txt-3); transform: translateY(-1px) }
-.cta-secondary svg { width: 14px; height: 14px }
+.cta-gh { display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px; background: var(--color-accent); color: #fff; font-family: var(--font-sans); font-size: 0.84rem; font-weight: 700; border: none; border-radius: 9px; cursor: pointer; text-decoration: none; transition: all 0.2s; box-shadow: 0 2px 8px rgba(217,119,87,0.25) }
+.cta-gh:hover { background: var(--color-accent-hover); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(217,119,87,0.35) }
+.cta-gh svg { width: 14px; height: 14px }
+.cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: transparent; color: var(--color-txt-2); font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600; border: 1px solid var(--color-border); border-radius: 9px; cursor: pointer; text-decoration: none; transition: all 0.2s }
+.cta-secondary:hover { color: var(--color-accent); border-color: var(--color-accent); transform: translateY(-1px) }
+.cta-secondary svg { width: 13px; height: 13px }
 /* ========== Docs Navbar (Claude API Docs style) ========== */
 
 .docs-navbar {
