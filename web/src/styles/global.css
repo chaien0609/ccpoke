@@ -1770,8 +1770,7 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.06) }
   .flow-node { font-size: 0.75rem; padding: 6px 12px; }
   .nav-hide-mobile { display: none }
   .mob-menu-btn { display: flex !important; }
-  .hero-section { padding: 2.5rem 0 1.5rem }
-  .hero-section p { font-size: 0.92rem; }
+
   .sect-section { padding: 2rem 0 }
   .sect-section > div:first-child h2 { font-size: 1.35rem; }
   .sect-section > div:first-child p { font-size: 0.85rem; }
@@ -1797,7 +1796,7 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.06) }
   #setup .grid p { font-size: 0.82rem; }
   #setup .flex.flex-col { gap: 1.75rem; }
 
-  .hero-section img { width: 56px; height: 56px; }
+
   .sect-section > div:first-child { margin-bottom: 1.5rem; }
   .cta-bottom { padding: 2rem 1.25rem; }
   .cta-bottom p { font-size: 0.82rem; }

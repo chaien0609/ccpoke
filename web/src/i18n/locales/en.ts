@@ -1,10 +1,10 @@
 const en = {
   title: "ccpoke — Code anywhere with AI Agents",
-  metaDesc: "Two-way interaction with Claude Code, Codex CLI, Cursor CLI and more from Telegram, Discord, Zalo. Code anytime, anywhere.",
+  metaDesc: "Two-way interaction with Claude Code, Codex CLI, Cursor CLI and more from your phone. Code anytime, anywhere.",
 
-  heroTitle: "Code anywhere, ",
+  heroTitle: "Code anywhere,",
   heroAccent: "anytime",
-  heroSub: "Two-way interaction with AI coding agents via Telegram, Discord, Zalo. Code on the go with your phone.",
+  heroSub: "Approve code, review PRs, and control AI agents — right from your phone.",
   heroCta: "Get Started",
 
   navHow: "How it works",
@@ -14,7 +14,7 @@ const en = {
 
   howLabel: "How it works",
   howTitle: "Two-way bridge between terminal and phone",
-  howSub: "Send prompts, receive results, approve permissions — all from your favorite chat platform.",
+
   howSoon: "soon",
 
   featuresLabel: "Features",
@@ -28,17 +28,17 @@ const en = {
 
   setupLabel: "Setup",
   setupTitle: "2 steps, 30 seconds",
-  setupSub: "Requires Node.js ≥ 20 and a Telegram Bot Token.",
-  setupStep1Title: "Create Bot Token",
-  setupStep1Desc: 'Open <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> on Telegram &rarr; <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">/newbot</code> &rarr; save the token.',
+  setupSub: "Node.js ≥ 20 required.",
+  setupStep1Title: "Create a bot token",
+  setupStep1Desc: '<strong>Telegram:</strong> open <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">/newbot</code> → copy token.<br/><br/><strong>Discord:</strong> <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Developer Portal</a> → New Application → Bot → copy token.<br/><br/><strong>Slack:</strong> <a href="https://api.slack.com/apps" target="_blank" rel="noopener">Slack API</a> → Create New App → <strong>From scratch</strong> → name your app & pick workspace → OAuth & Permissions → add <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">chat:write</code> scope → scroll up to OAuth Tokens → generate and copy <strong>Bot User OAuth Token</strong>.',
   setupStep2Title: "Run one command",
-  setupStep2Desc: '💡 For daily use, install globally: <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">npm i -g ccpoke</code> for faster startup.',
+  setupStep2Desc: 'The setup wizard handles everything — hooks, bot connection, agent selection. For daily use, install globally: <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">npm i -g ccpoke</code>.',
   setupStep3Title: "Done!",
-  setupStep3Desc: 'Scan the QR code or click the link shown in terminal to connect your Telegram. Setup is automatic — no manual User ID needed.',
+  setupStep3Desc: 'Follow the wizard to connect your bot. Setup is automatic — no manual config needed.',
 
   roadmapLabel: "Roadmap",
   roadmapTitle: "Long-term roadmap",
-  roadmapSub: "Telegram-first — perfect the experience on Telegram first, then expand to other platforms.",
+  roadmapSub: "Multi-platform — Telegram, Discord, and Slack supported. More platforms coming.",
 
   phase1Label: "Phase 1 · Complete",
   phase1Title: "Notification bridge",
@@ -52,8 +52,8 @@ const en = {
 
   phase3Label: "Phase 3 · Complete",
   phase3Title: "Smart reply",
-  phase3Desc: "Handle complex AskUser interactions — elicitation forms, multi-select with descriptions, and structured input — all from Telegram.",
-  phase3Tags: ["Elicitation forms","Multi-select + descriptions","Structured input","Rich Telegram UI","Permission approve/deny"],
+  phase3Desc: "Handle complex AskUser interactions — elicitation forms, multi-select with descriptions, and structured input — all from your phone.",
+  phase3Tags: ["Elicitation forms","Multi-select + descriptions","Structured input","Rich chat UI","Permission approve/deny"],
 
   phase4Label: "Phase 4 · Complete",
   phase4Title: "Multi-session",
@@ -67,8 +67,8 @@ const en = {
 
   phase6Label: "Phase 6",
   phase6Title: "Ecosystem",
-  phase6Desc: "Multi-platform support (Discord, Slack), plugin system, team collaboration, web dashboard with usage analytics.",
-  phase6Tags: ["Discord · Slack","Plugin system","Team collaboration","Web dashboard","Usage analytics"],
+  phase6Desc: "Plugin system, team collaboration, web dashboard with usage analytics, and more platform integrations.",
+  phase6Tags: ["Plugin system","Team collaboration","Web dashboard","Usage analytics","More platforms"],
 
   copyBtn: "Copy",
   copiedBtn: "Copied!",

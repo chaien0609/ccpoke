@@ -1,0 +1,145 @@
+---
+---
+
+<div class="fl-orbit" aria-hidden="true">
+  <span class="fl-el fl-el--tag fl-p1">&lt;/&gt;</span>
+  <span class="fl-el fl-el--box fl-p2">&gt;_</span>
+  <span class="fl-el fl-el--sym fl-p3">{}</span>
+  <span class="fl-el fl-el--diamond fl-p4">◆</span>
+  <span class="fl-el fl-el--ring fl-p5"></span>
+  <span class="fl-el fl-el--dot fl-p6"></span>
+</div>
+
+<style>
+  .fl-orbit {
+    position: absolute;
+    width: 560px;
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    pointer-events: none;
+  }
+
+  .fl-el {
+    position: absolute;
+    will-change: transform;
+  }
+
+  .fl-el--tag {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    opacity: 0.8;
+    text-shadow: 0 0 12px rgba(217, 119, 87, 0.4);
+    animation: fl-orbit-a 7s ease-in-out infinite;
+  }
+
+  .fl-el--box {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-txt-2);
+    background: var(--color-bg-2);
+    border: 1.5px solid var(--color-border);
+    padding: 6px 14px;
+    border-radius: 8px;
+    opacity: 0.85;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    animation: fl-orbit-b 8s ease-in-out infinite;
+  }
+
+  [data-theme="dark"] .fl-el--box {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.55);
+    box-shadow: 0 2px 16px rgba(217, 119, 87, 0.1);
+  }
+
+  .fl-el--sym {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-txt-3);
+    opacity: 0.65;
+    text-shadow: 0 0 8px rgba(217, 119, 87, 0.2);
+    animation: fl-orbit-a 6.5s ease-in-out infinite;
+  }
+
+  .fl-el--diamond {
+    font-size: 1rem;
+    color: var(--color-accent);
+    opacity: 0.6;
+    text-shadow: 0 0 10px rgba(217, 119, 87, 0.35);
+    animation: fl-orbit-b 7.5s ease-in-out infinite;
+  }
+
+  .fl-el--ring {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--color-accent);
+    opacity: 0.4;
+    box-shadow: 0 0 8px rgba(217, 119, 87, 0.2);
+    animation: fl-orbit-a 9s ease-in-out infinite;
+  }
+
+  .fl-el--dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0.5;
+    box-shadow: 0 0 6px rgba(217, 119, 87, 0.3);
+    animation: fl-orbit-b 6s ease-in-out infinite;
+  }
+
+  /* === SAFE ZONE POSITIONS (top >= 20%, avoid navbar) === */
+  .fl-p1 { top: 22%; left: 8%;   animation-delay: 0s; }
+  .fl-p2 { top: 25%; right: 6%;  animation-delay: -3s; }
+  .fl-p3 { top: 55%; right: 10%; animation-delay: -1.5s; }
+  .fl-p4 { top: 65%; left: 15%;  animation-delay: -4s; }
+  .fl-p5 { top: 40%; left: 2%;   animation-delay: -2s; }
+  .fl-p6 { top: 45%; right: 18%; animation-delay: -5s; }
+
+  @keyframes fl-orbit-a {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(4px, -8px) rotate(1.5deg);
+    }
+    50% {
+      transform: translate(-3px, -12px) rotate(-1deg);
+    }
+    75% {
+      transform: translate(2px, -5px) rotate(0.5deg);
+    }
+  }
+
+  @keyframes fl-orbit-b {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(-5px, -6px) rotate(-1deg);
+    }
+    50% {
+      transform: translate(3px, -10px) rotate(1.5deg);
+    }
+    75% {
+      transform: translate(-2px, -4px) rotate(-0.5deg);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .fl-orbit {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fl-el { animation: none !important; }
+  }
+</style>

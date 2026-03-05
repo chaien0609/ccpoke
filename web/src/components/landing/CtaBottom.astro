@@ -1,5 +1,5 @@
 ---
-import { ts, type Locale } from "../../i18n";
+import { ts, DEFAULT_LOCALE, type Locale } from "../../i18n";
 import { icons } from "../../assets/icons";
 
 interface Props {
@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const docsHref = locale === DEFAULT_LOCALE ? `${base}docs/` : `${base}${locale}/docs/`;
 ---
 
 <section class="cta-bottom mt-8 reveal">
@@ -22,7 +24,7 @@ const { locale } = Astro.props;
       <span class="w-4 h-4 inline-flex" set:html={icons.github16} />
       <span>{ts(locale, "ctaGithub")}</span>
     </a>
-    <a href="#setup" class="cta-secondary">
+    <a href={docsHref} class="cta-secondary">
       <span>{ts(locale, "ctaGetStarted")}</span>
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12l4-4-4-4"/></svg>
     </a>

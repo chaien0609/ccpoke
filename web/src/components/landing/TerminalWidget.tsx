@@ -58,7 +58,7 @@ export default function TerminalWidget({ copyLabel, copiedLabel }: Props) {
         <button
           onClick={handleCopy}
           aria-label={copied ? copiedLabel : copyLabel}
-          class={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[7px] border font-sans text-[0.78rem] font-semibold cursor-pointer shrink-0 transition-all duration-200 ${
+          class={`inline-flex items-center gap-1.5 rounded-[7px] border font-sans text-[0.78rem] font-semibold cursor-pointer shrink-0 transition-all duration-200 px-3.5 py-2.5 min-w-[44px] min-h-[44px] ${
             !typingComplete
               ? "opacity-0 pointer-events-none"
               : copied
@@ -67,13 +67,16 @@ export default function TerminalWidget({ copyLabel, copiedLabel }: Props) {
           }`}
         >
           <span
-            class="w-[13px] h-[13px] inline-flex"
+            class="w-[15px] h-[15px] inline-flex"
             dangerouslySetInnerHTML={{ __html: copyIcon }}
           />
           <span class="hidden sm:inline">
             {copied ? copiedLabel : copyLabel}
           </span>
         </button>
+      </div>
+      <div aria-live="polite" class="sr-only">
+        {copied ? copiedLabel : ""}
       </div>
     </div>
   );

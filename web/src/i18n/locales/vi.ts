@@ -2,11 +2,11 @@ import type { LocaleDict } from "./en";
 
 export const vi: LocaleDict = {
   title: "ccpoke — Code mọi nơi với AI Agents",
-  metaDesc: "Tương tác 2 chiều với Claude Code, Codex CLI, Cursor CLI và nhiều AI agent khác từ Telegram, Discord, Zalo. Code mọi lúc mọi nơi.",
+  metaDesc: "Tương tác 2 chiều với Claude Code, Codex CLI, Cursor CLI và nhiều AI agent khác từ điện thoại. Code mọi lúc mọi nơi.",
 
-  heroTitle: "Code mọi nơi, ",
+  heroTitle: "Code mọi nơi,",
   heroAccent: "mọi lúc",
-  heroSub: "Tương tác 2 chiều với các AI coding agents qua Telegram, Discord, Zalo. Cầm điện thoại mà vẫn code.",
+  heroSub: "Approve code, review PR, điều khiển AI agents — ngay từ điện thoại.",
   heroCta: "Bắt đầu ngay",
 
   navHow: "Cách hoạt động",
@@ -16,7 +16,7 @@ export const vi: LocaleDict = {
 
   howLabel: "Cách hoạt động",
   howTitle: "Cầu nối 2 chiều giữa terminal và điện thoại",
-  howSub: "Gửi prompt, nhận kết quả, phê duyệt quyền — tất cả từ nền tảng chat bạn đang dùng.",
+
   howSoon: "sắp ra mắt",
 
   featuresLabel: "Tính năng",
@@ -30,17 +30,17 @@ export const vi: LocaleDict = {
 
   setupLabel: "Cài đặt",
   setupTitle: "2 bước, 30 giây",
-  setupSub: "Cần Node.js ≥ 20 và một Telegram Bot Token.",
-  setupStep1Title: "Tạo Bot Token",
-  setupStep1Desc: 'Mở <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> trên Telegram &rarr; <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">/newbot</code> &rarr; lưu token.',
+  setupSub: "Cần Node.js ≥ 20.",
+  setupStep1Title: "Tạo bot token",
+  setupStep1Desc: '<strong>Telegram:</strong> mở <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">/newbot</code> → copy token.<br/><br/><strong>Discord:</strong> <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Developer Portal</a> → New Application → Bot → copy token.<br/><br/><strong>Slack:</strong> <a href="https://api.slack.com/apps" target="_blank" rel="noopener">Slack API</a> → Create New App → <strong>From scratch</strong> → đặt tên app & chọn workspace → OAuth & Permissions → thêm scope <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">chat:write</code> → cuộn lên mục OAuth Tokens → tạo và copy <strong>Bot User OAuth Token</strong>.',
   setupStep2Title: "Chạy một lệnh duy nhất",
-  setupStep2Desc: '💡 Dùng hàng ngày thì cài global: <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">npm i -g ccpoke</code> để khởi động nhanh hơn.',
+  setupStep2Desc: 'Wizard tự lo mọi thứ — hooks, kết nối bot, chọn agent. Dùng hàng ngày thì cài global: <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">npm i -g ccpoke</code>.',
   setupStep3Title: "Xong!",
-  setupStep3Desc: 'Quét mã QR hoặc click link hiện trong terminal để kết nối Telegram. Setup tự động — không cần nhập User ID thủ công.',
+  setupStep3Desc: 'Làm theo wizard để kết nối bot. Setup tự động — không cần cấu hình thủ công.',
 
   roadmapLabel: "Lộ trình",
   roadmapTitle: "Lộ trình dài hơi",
-  roadmapSub: "Telegram-first — hoàn thiện trải nghiệm trên Telegram trước, sau đó mở rộng ra các nền tảng khác.",
+  roadmapSub: "Đa nền tảng — hỗ trợ Telegram, Discord, Slack. Thêm nền tảng mới sắp tới.",
 
   phase1Label: "Giai đoạn 1 · Hoàn thành",
   phase1Title: "Cầu nối thông báo",
@@ -54,8 +54,8 @@ export const vi: LocaleDict = {
 
   phase3Label: "Giai đoạn 3 · Hoàn thành",
   phase3Title: "Trả lời thông minh",
-  phase3Desc: "Xử lý tương tác AskUser phức tạp — form elicitation, đa lựa chọn kèm mô tả, nhập liệu có cấu trúc — tất cả từ Telegram.",
-  phase3Tags: ["Form elicitation","Đa lựa chọn + mô tả","Nhập liệu có cấu trúc","Giao diện Telegram phong phú","Phê duyệt quyền"],
+  phase3Desc: "Xử lý tương tác AskUser phức tạp — form elicitation, đa lựa chọn kèm mô tả, nhập liệu có cấu trúc — tất cả từ điện thoại.",
+  phase3Tags: ["Form elicitation","Đa lựa chọn + mô tả","Nhập liệu có cấu trúc","Giao diện chat phong phú","Phê duyệt quyền"],
 
   phase4Label: "Giai đoạn 4 · Hoàn thành",
   phase4Title: "Đa phiên",
@@ -69,8 +69,8 @@ export const vi: LocaleDict = {
 
   phase6Label: "Giai đoạn 6",
   phase6Title: "Hệ sinh thái",
-  phase6Desc: "Đa nền tảng (Discord, Slack), hệ thống plugin, cộng tác nhóm, bảng điều khiển web với phân tích sử dụng.",
-  phase6Tags: ["Discord · Slack","Hệ thống plugin","Cộng tác nhóm","Bảng điều khiển web","Phân tích sử dụng"],
+  phase6Desc: "Hệ thống plugin, cộng tác nhóm, bảng điều khiển web với phân tích sử dụng, và thêm nền tảng mới.",
+  phase6Tags: ["Hệ thống plugin","Cộng tác nhóm","Bảng điều khiển web","Phân tích sử dụng","Thêm nền tảng"],
 
   copyBtn: "Sao chép",
   copiedBtn: "Đã sao chép!",

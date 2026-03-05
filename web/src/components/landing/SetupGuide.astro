@@ -15,7 +15,7 @@ const { locale } = Astro.props;
     <p class="text-[0.95rem] text-txt-2 max-w-[460px] reveal-item" style="transition-delay: 0.12s">{ts(locale, "setupSub")}</p>
   </div>
 
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-10">
     <div class="grid grid-cols-[32px_1fr] gap-4 reveal-item" style="transition-delay: 0.1s">
       <div class="w-8 h-8 rounded-full bg-txt text-bg flex items-center justify-center text-[0.8rem] font-bold shrink-0">1</div>
       <div class="min-w-0">
@@ -36,44 +36,29 @@ no config found — starting setup wizard...
 ◇  Language
 │  English
 │
-◇  Telegram Bot Token
+◇  Chat platform
+│  Telegram
+│
+◇  Bot Token
 │  ****:ABC-xxx
 │
 ◇  ✓ Bot: @your_bot
 │
 ◇  Scan QR or open link to connect:
-│  ┌─────────────────┐
-│  │  ▀▄▀▄▀  ▄▀▄▀▄   │
-│  │  █ QR Code █    │
-│  │  ▄▀▄▀▄  ▀▄▀▄▀   │
-│  └─────────────────┘
 │  https://t.me/your_bot?start=setup
 │
-◇  Waiting for you to send /start to the bot...
-│
-◆  ✓ Connected! User ID: 123456789
+◆  ✓ Connected!
 │
 ◇  Select AI agents (space to toggle)
 │  Claude Code, Cursor CLI
 │
-◆  Config saved
-◆  Hook installed for Claude Code
-◆  Hook installed for Cursor CLI
-◆  Chat ID registered
+◆  Config saved · Hooks installed
 │
 └  🎉 Setup complete!
 
 ccpoke: hook server listening on localhost:9377
 ccpoke: telegram bot started</span></pre>
         <p class="mt-2.5 text-[0.88rem] text-txt-2 leading-relaxed" set:html={ts(locale, "setupStep2Desc")} />
-      </div>
-    </div>
-
-    <div class="grid grid-cols-[32px_1fr] gap-4 reveal-item" style="transition-delay: 0.3s">
-      <div class="w-8 h-8 rounded-full bg-txt text-bg flex items-center justify-center text-[0.8rem] font-bold shrink-0">3</div>
-      <div class="min-w-0">
-        <h3 class="text-base font-bold mb-1.5">{ts(locale, "setupStep3Title")}</h3>
-        <p class="text-[0.88rem] text-txt-2 leading-relaxed" set:html={ts(locale, "setupStep3Desc")} />
       </div>
     </div>
   </div>

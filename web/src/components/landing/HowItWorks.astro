@@ -19,8 +19,8 @@ const leftNodes = [
 
 const rightNodes = [
   { name: "Telegram", icon: icons.brandTelegram, active: true },
-  { name: "Discord", icon: icons.brandDiscord, active: false },
-  { name: "Slack", icon: icons.brandSlack, active: false },
+  { name: "Discord", icon: icons.brandDiscord, active: true },
+  { name: "Slack", icon: icons.brandSlack, active: true },
   { name: "Zalo", icon: icons.brandZalo, active: false },
 ];
 ---
@@ -29,7 +29,7 @@ const rightNodes = [
   <div class="mb-12">
     <p class="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-accent mb-2 reveal-item">{ts(locale, "howLabel")}</p>
     <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold tracking-tight mb-2 reveal-item" style="transition-delay: 0.06s">{ts(locale, "howTitle")}</h2>
-    <p class="text-[0.95rem] text-txt-2 max-w-[460px] reveal-item" style="transition-delay: 0.12s">{ts(locale, "howSub")}</p>
+
   </div>
 
   <div class="flow-diagram" id="flow-diagram">

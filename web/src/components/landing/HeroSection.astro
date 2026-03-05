@@ -1,7 +1,9 @@
 ---
-import { ts, type Locale } from "../../i18n";
+import { ts, DEFAULT_LOCALE, type Locale } from "../../i18n";
 import TerminalWidget from "./TerminalWidget";
 import AnimatedRocket from "../AnimatedRocket.astro";
+import FloatingElements from "./FloatingElements.astro";
+import { icons } from "../../assets/icons";
 
 interface Props {
   locale: Locale;
@@ -9,22 +11,137 @@ interface Props {
 
 const { locale } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const docsHref = locale === DEFAULT_LOCALE ? `${base}docs/` : `${base}${locale}/docs/`;
 ---
 
-<section class="hero-section pt-14 pb-10 text-center">
-  <div class="mb-5">
-    <AnimatedRocket size={120} class="mx-auto" />
-  </div>
-  <h1 class="text-[clamp(2.2rem,5.5vw,3.4rem)] font-extrabold tracking-tighter leading-[1.12] mb-3">
-    <span>{ts(locale, "heroTitle")}</span><span class="text-accent">{ts(locale, "heroAccent")}</span>
-  </h1>
-  <p class="text-[1.05rem] text-txt-2 max-w-[540px] mx-auto mb-6 leading-[1.7]">
-    {ts(locale, "heroSub")}
-  </p>
+<section class="hero-section" id="hero">
+  <div class="hero-content">
+    <div class="hero-mascot">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <FloatingElements />
+      <AnimatedRocket size={180} class="mx-auto" />
+    </div>
+    <h1 class="text-[clamp(2.2rem,5.5vw,3.4rem)] font-extrabold tracking-tighter leading-[1.12] mb-3">
+      <span>{ts(locale, "heroTitle")}</span> <span class="text-accent">{ts(locale, "heroAccent")}</span>
+    </h1>
+    <p class="text-[1.05rem] text-txt-2 max-w-[540px] mx-auto mb-8 leading-[1.7]">
+      {ts(locale, "heroSub")}
+    </p>
 
-  <TerminalWidget
-    client:load
-    copyLabel={ts(locale, "copyBtn")}
-    copiedLabel={ts(locale, "copiedBtn")}
-  />
+    <div class="hero-cta-group">
+      <a href={docsHref} class="cta-gh">
+        <span>{ts(locale, "heroCta")}</span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12l4-4-4-4"/></svg>
+      </a>
+      <a href="https://github.com/kaida-palooza/ccpoke" target="_blank" rel="noopener" class="cta-secondary">
+        <span class="w-4 h-4 inline-flex" set:html={icons.github16} />
+        <span>{ts(locale, "ctaGithub")}</span>
+      </a>
+    </div>
+
+    <div class="hero-terminal">
+      <TerminalWidget
+        client:load
+        copyLabel={ts(locale, "copyBtn")}
+        copiedLabel={ts(locale, "copiedBtn")}
+      />
+    </div>
+  </div>
 </section>
+
+<style>
+  .hero-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 0 2rem;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-mascot {
+    position: relative;
+    margin-bottom: 2rem;
+    overflow: visible;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(217, 119, 87, 0.08) 0%,
+      rgba(217, 119, 87, 0.03) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+    animation: glow-pulse 6s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { transform: translate(-50%, -55%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -55%) scale(1.08); opacity: 0.7; }
+  }
+
+  .hero-mascot :global(.fl-orbit) {
+    z-index: 1;
+  }
+
+  .hero-mascot :global(.rocket-container) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-cta-group .cta-gh svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .hero-terminal {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  @media (max-width: 700px) {
+    .hero-section {
+      padding: 2.5rem 0 1.5rem;
+    }
+    .hero-section :global(p) { font-size: 0.92rem; }
+    .hero-mascot {
+      margin-bottom: 1.5rem;
+    }
+    .hero-cta-group {
+      flex-direction: column;
+      width: 100%;
+      max-width: 320px;
+    }
+    .hero-cta-group .cta-gh,
+    .hero-cta-group .cta-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

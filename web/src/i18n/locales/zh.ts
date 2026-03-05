@@ -2,11 +2,11 @@ import type { LocaleDict } from "./en";
 
 export const zh: LocaleDict = {
   title: "ccpoke — 使用 AI Agents 随时随地编程",
-  metaDesc: "通过 Telegram、Discord、Zalo 与 Claude Code、Codex CLI、Cursor CLI 等 AI 代理双向交互。随时随地编程。",
+  metaDesc: "通过手机与 Claude Code、Codex CLI、Cursor CLI 等 AI 代理双向交互。随时随地编程。",
 
   heroTitle: "随时随地，",
   heroAccent: "编程",
-  heroSub: "通过 Telegram、Discord、Zalo 与 AI 编程代理双向交互。手机在手，代码在心。",
+  heroSub: "审批代码、Review PR、控制 AI Agents — 直接在手机上操作。",
   heroCta: "开始使用",
 
   navHow: "工作原理",
@@ -16,7 +16,7 @@ export const zh: LocaleDict = {
 
   howLabel: "工作原理",
   howTitle: "终端与手机之间的双向桥梁",
-  howSub: "发送提示、接收结果、审批权限 — 全部在您使用的聊天平台上完成。",
+
   howSoon: "即将推出",
 
   featuresLabel: "功能",
@@ -30,17 +30,17 @@ export const zh: LocaleDict = {
 
   setupLabel: "安装",
   setupTitle: "2 步，30 秒",
-  setupSub: "需要 Node.js ≥ 20 和一个 Telegram Bot Token。",
+  setupSub: "需要 Node.js ≥ 20。",
   setupStep1Title: "创建 Bot Token",
-  setupStep1Desc: '在 Telegram 上打开 <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> &rarr; <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">/newbot</code> &rarr; 保存 Token。',
+  setupStep1Desc: '<strong>Telegram:</strong> 打开 <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">/newbot</code> → 复制 Token。<br/><br/><strong>Discord:</strong> <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Developer Portal</a> → New Application → Bot → 复制 Token。<br/><br/><strong>Slack:</strong> <a href="https://api.slack.com/apps" target="_blank" rel="noopener">Slack API</a> → Create New App → <strong>From scratch</strong> → 命名应用并选择工作区 → OAuth & Permissions → 添加 <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">chat:write</code> 权限 → 滚动到 OAuth Tokens → 生成并复制 <strong>Bot User OAuth Token</strong>。',
   setupStep2Title: "运行一个命令",
-  setupStep2Desc: '💡 日常使用建议全局安装: <code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">npm i -g ccpoke</code> 启动更快。',
+  setupStep2Desc: '安装向导自动处理一切 — hooks、Bot 连接、代理选择。日常使用建议全局安装：<code class="font-mono text-[0.78rem] bg-bg-warm px-[7px] py-0.5 rounded text-accent">npm i -g ccpoke</code>。',
   setupStep3Title: "完成！",
-  setupStep3Desc: '扫描终端中显示的二维码或点击链接连接 Telegram。自动完成设置 — 无需手动输入用户 ID。',
+  setupStep3Desc: '按向导提示连接 Bot。自动完成设置 — 无需手动配置。',
 
   roadmapLabel: "路线图",
   roadmapTitle: "长期路线图",
-  roadmapSub: "Telegram 优先 — 先完善 Telegram 上的体验，然后扩展到其他平台。",
+  roadmapSub: "多平台 — 支持 Telegram、Discord、Slack。更多平台即将推出。",
 
   phase1Label: "阶段 1 · 已完成",
   phase1Title: "通知桥接",
@@ -54,8 +54,8 @@ export const zh: LocaleDict = {
 
   phase3Label: "阶段 3 · 已完成",
   phase3Title: "智能回复",
-  phase3Desc: "处理复杂的 AskUser 交互 — elicitation 表单、带描述的多选、结构化输入 — 全部通过 Telegram。",
-  phase3Tags: ["Elicitation 表单","多选 + 描述","结构化输入","丰富 Telegram UI","权限批准/拒绝"],
+  phase3Desc: "处理复杂的 AskUser 交互 — elicitation 表单、带描述的多选、结构化输入 — 全部通过手机。",
+  phase3Tags: ["Elicitation 表单","多选 + 描述","结构化输入","丰富聊天 UI","权限批准/拒绝"],
 
   phase4Label: "阶段 4 · 已完成",
   phase4Title: "多会话",
@@ -69,8 +69,8 @@ export const zh: LocaleDict = {
 
   phase6Label: "阶段 6",
   phase6Title: "生态系统",
-  phase6Desc: "多平台支持 (Discord、Slack)、插件系统、团队协作、Web 仪表板与使用分析。",
-  phase6Tags: ["Discord · Slack","插件系统","团队协作","Web 仪表板","使用分析"],
+  phase6Desc: "插件系统、团队协作、Web 仪表板与使用分析，以及更多平台集成。",
+  phase6Tags: ["插件系统","团队协作","Web 仪表板","使用分析","更多平台"],
 
   copyBtn: "复制",
   copiedBtn: "已复制！",
