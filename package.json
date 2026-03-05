@@ -65,8 +65,10 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.0.1",
+    "@slack/web-api": "^7.14.1",
     "better-sqlite3": "^12.6.2",
     "cloudflared": "^0.7.1",
+    "discord.js": "^14.25.1",
     "express": "^5.0.1",
     "node-telegram-bot-api": "^0.67.0",
     "qrcode-terminal": "^0.12.0"
