@@ -75,7 +75,7 @@ export async function fetchUpdateInfo(): Promise<UpdateInfo | null> {
   return null;
 }
 
-function runUpdateInline(): boolean {
+function runUpdateInline(): { ok: true } | { ok: false; cmd: string; error: string } {
   const pm = detectGlobalPackageManager();
   const pkg = "ccpoke";
   const cmd =
@@ -83,9 +83,11 @@ function runUpdateInline(): boolean {
 
   try {
     execSync(cmd, { stdio: "pipe" });
-    return true;
-  } catch {
-    return false;
+    return { ok: true };
+  } catch (e) {
+    const stderr =
+      e instanceof Error && "stderr" in e ? String((e as { stderr: unknown }).stderr).trim() : "";
+    return { ok: false, cmd, error: stderr || (e instanceof Error ? e.message : String(e)) };
   }
 }
 
@@ -113,14 +115,17 @@ export async function promptUpdateOrContinue(info: UpdateInfo): Promise<void> {
   const s = p.spinner();
   s.start(t("versionCheck.updating"));
 
-  const success = runUpdateInline();
+  const result = runUpdateInline();
 
-  if (success) {
+  if (result.ok) {
     s.stop(`✅ v${info.latestVersion} ${t("versionCheck.ready")}`);
     await respawnSelf();
   } else {
     s.stop("❌");
-    p.log.warn(t("versionCheck.runToUpdate", { command: getUpdateCommand(method) }));
+    if (result.error) {
+      p.log.error(result.error);
+    }
+    p.log.warn(t("versionCheck.runToUpdate", { command: result.cmd }));
   }
 }
 
