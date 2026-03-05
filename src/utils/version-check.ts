@@ -91,6 +91,7 @@ function runUpdateInline(): boolean {
 
 export async function promptUpdateOrContinue(info: UpdateInfo): Promise<void> {
   const method = detectInstallMethod();
+  const versionRange = `v${info.currentVersion} → v${info.latestVersion}`;
 
   if (method === InstallMethod.Npx || method === InstallMethod.GitClone) {
     p.log.warn(
@@ -103,23 +104,11 @@ export async function promptUpdateOrContinue(info: UpdateInfo): Promise<void> {
     return;
   }
 
-  const updateLabel = `${t("versionCheck.updatePrompt", { latest: info.latestVersion })} (v${info.currentVersion} → v${info.latestVersion})`;
-  const continueLabel = t("versionCheck.continueWithoutUpdate", {
-    current: info.currentVersion,
+  const shouldUpdate = await p.confirm({
+    message: `${versionRange} — ${t("versionCheck.updateConfirm")}`,
   });
 
-  const result = await p.select({
-    message: t("versionCheck.updateAvailable", {
-      current: info.currentVersion,
-      latest: info.latestVersion,
-    }),
-    options: [
-      { value: "update", label: updateLabel },
-      { value: "continue", label: continueLabel },
-    ],
-  });
-
-  if (p.isCancel(result) || result === "continue") return;
+  if (p.isCancel(shouldUpdate) || !shouldUpdate) return;
 
   const s = p.spinner();
   s.start(t("versionCheck.updating"));
@@ -127,8 +116,7 @@ export async function promptUpdateOrContinue(info: UpdateInfo): Promise<void> {
   const success = runUpdateInline();
 
   if (success) {
-    s.stop(`✅ v${info.currentVersion} → v${info.latestVersion}`);
-    p.log.info(t("versionCheck.restarting"));
+    s.stop(`✅ v${info.latestVersion} ${t("versionCheck.ready")}`);
     await respawnSelf();
   } else {
     s.stop("❌");

@@ -207,11 +207,10 @@ export const vi: TranslationKeys = {
   },
   versionCheck: {
     updateAvailable: "Có bản cập nhật mới! {current} → {latest}",
+    updateConfirm: "Cập nhật ngay?",
     updating: "Đang cập nhật...",
     runToUpdate: "Chạy `{command}` để cập nhật",
-    updatePrompt: "Cập nhật lên v{latest}?",
-    continueWithoutUpdate: "Tiếp tục với v{current}",
-    restarting: "Đang khởi động lại...",
+    ready: "đã sẵn sàng",
   },
   tmux: {
     notAvailable: "Chưa cài tmux — chat 2 chiều tắt, notification vẫn hoạt động",

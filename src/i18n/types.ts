@@ -192,11 +192,10 @@ export interface TranslationKeys {
   };
   versionCheck: {
     updateAvailable: string;
+    updateConfirm: string;
     updating: string;
     runToUpdate: string;
-    updatePrompt: string;
-    continueWithoutUpdate: string;
-    restarting: string;
+    ready: string;
   };
   tmux: {
     notAvailable: string;
