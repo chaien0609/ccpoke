@@ -46,7 +46,12 @@ export class TelegramChannel implements NotificationChannel {
     this.stateManager = deps?.stateManager ?? null;
     this.tmuxBridge = deps?.tmuxBridge ?? null;
     this.registry = deps?.registry ?? null;
-    this.bot = new TelegramBot(cfg.telegram_bot_token, { polling: false });
+    this.bot = new TelegramBot(cfg.telegram_bot_token, {
+      polling: {
+        autoStart: false,
+        params: { allowed_updates: ["message", "callback_query"] },
+      },
+    });
     this.chatId = ConfigManager.loadChatState().chat_id;
     this.registerHandlers();
     this.registerChatHandlers();
@@ -209,7 +214,13 @@ export class TelegramChannel implements NotificationChannel {
   private registerChatHandlers(): void {
     this.bot.on("callback_query", async (query) => {
       try {
-        if (!ConfigManager.isOwner(this.cfg, query.from.id)) return;
+        logDebug(
+          `[TG:callback] id=${query.id} from=${query.from.id} data=${query.data ?? "(none)"}`
+        );
+        if (!ConfigManager.isOwner(this.cfg, query.from.id)) {
+          logDebug(`[TG:callback] dropped: unauthorized userId=${query.from.id}`);
+          return;
+        }
 
         if (query.data?.startsWith("aq:") || query.data?.startsWith("am:")) {
           await this.askQuestionHandler?.handleCallback(query);
@@ -324,9 +335,21 @@ export class TelegramChannel implements NotificationChannel {
     });
 
     this.bot.on("message", async (msg) => {
-      if (!msg.reply_to_message) return;
-      if (!msg.text) return;
-      if (!ConfigManager.isOwner(this.cfg, msg.from?.id ?? 0)) return;
+      logDebug(
+        `[TG:msg] msgId=${msg.message_id} from=${msg.from?.id ?? "?"} chatId=${msg.chat.id} hasReply=${!!msg.reply_to_message} hasText=${!!msg.text}`
+      );
+      if (!msg.reply_to_message) {
+        logDebug(`[TG:msg] dropped: no reply_to_message msgId=${msg.message_id}`);
+        return;
+      }
+      if (!msg.text) {
+        logDebug(`[TG:msg] dropped: no text msgId=${msg.message_id}`);
+        return;
+      }
+      if (!ConfigManager.isOwner(this.cfg, msg.from?.id ?? 0)) {
+        logDebug(`[TG:msg] dropped: unauthorized userId=${msg.from?.id ?? "?"}`);
+        return;
+      }
 
       logDebug(
         `[Chat:msg] replyTo=${msg.reply_to_message.message_id} text="${msg.text.slice(0, 50)}"`
@@ -344,7 +367,12 @@ export class TelegramChannel implements NotificationChannel {
       }
 
       const pending = this.pendingReplyStore.get(msg.chat.id, msg.reply_to_message.message_id);
-      if (!pending) return;
+      if (!pending) {
+        logDebug(
+          `[TG:msg] dropped: no pending reply for chatId=${msg.chat.id} replyToMsgId=${msg.reply_to_message.message_id}`
+        );
+        return;
+      }
 
       this.pendingReplyStore.delete(msg.chat.id, msg.reply_to_message.message_id);
       this.bot.deleteMessage(msg.chat.id, msg.reply_to_message.message_id).catch(() => {});
