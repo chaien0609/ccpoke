@@ -408,8 +408,8 @@ Detects agents by matching AGENT_PATTERNS:
 4. TELEGRAM CHANNEL
    ├─ PromptHandler receives elicitation_dialog
    ├─ Format message with title + prompt
-   ├─ Send to Telegram with force_reply markup
-   └─ Track pending prompt (10min TTL)
+   ├─ Send to Telegram with force_reply + selective markup
+   └─ Track pending prompt (no TTL, cleaned on reply/shutdown/evict)
 
 5. USER ON PHONE
    ├─ Sees prompt message with reply field

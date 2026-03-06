@@ -86,7 +86,7 @@ Implements the **Adapter Pattern** for multi-channel support.
 | **types.ts** | 25 | `NotificationChannel` interface definition |
 | **telegram/telegram-channel.ts** | 730 | Bot lifecycle, Telegram handlers, notification formatting, session management |
 | **telegram/telegram-sender.ts** | 97 | Message sending, pagination, Markdown escaping |
-| **telegram/pending-reply-store.ts** | 43 | In-memory store for tracking pending replies (10min TTL) |
+| **telegram/pending-reply-store.ts** | 56 | In-memory store for tracking pending replies (no TTL, evict at 200 entries, cleanup on reply/shutdown) |
 | **telegram/session-list.ts** | 60 | `/sessions` command formatting with state emojis and Chat buttons |
 | **telegram/prompt-handler.ts** | 163 | Forwards elicitation_dialog and idle_prompt events with force_reply |
 | **telegram/permission-request-handler.ts** | 192 | Forward tool-use Allow/Deny decisions to Telegram inline keyboard |
@@ -320,7 +320,7 @@ idle → blocked → busy → idle
    - Resolve session
    - Update state → blocked
 4. PromptHandler forwards to Telegram
-   - force_reply markup
+   - force_reply + selective markup
    - User types response
 5. Message reply detection
 6. PromptHandler.injectElicitationResponse()

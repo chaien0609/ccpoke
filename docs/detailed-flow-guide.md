@@ -250,8 +250,8 @@ sequenceDiagram
     participant CC as Claude Code<br/>(tmux)
 
     U->>BOT: Nhan nut 💬 Chat<br/>callback: chat:sess123
-    BOT->>U: my-project<br/>force_reply: true
-    BOT->>PRS: set(chatId, msgId, sess123, project)<br/>TTL: 10 phut
+    BOT->>U: my-project<br/>force_reply: true, selective: true
+    BOT->>PRS: set(chatId, msgId, sess123, project)
 
     U->>BOT: Reply: fix bug X
     BOT->>PRS: get(chatId, replyToMsgId)
@@ -282,9 +282,11 @@ sequenceDiagram
 
 **Buoc 1:** User nhan nut "💬 Chat" → Telegram gui `callback_query` voi `data: "chat:sess123"`.
 
-**Buoc 2:** Bot gui prompt message voi `force_reply: true` → Telegram tu dong mo reply mode.
+**Buoc 2:** Bot gui prompt message voi `force_reply: true, selective: true` → Telegram tu dong mo reply mode.
 
-**Buoc 3:** Luu vao `PendingReplyStore` — key `"chatId:messageId"` → `{sessionId, project, createdAt}`. Tu xoa sau 10 phut (setTimeout).
+**Buoc 3:** Luu vao `PendingReplyStore` — key `"chatId:messageId"` → `{chatId, messageId, sessionId, project}`. Khong co TTL — entry song den khi user reply, bot shutdown, hoac bi evict (max 200 entries). Khi reply thanh cong hoac cleanup, bot xoa force_reply message de clear Telegram draft.
+
+> **Known limitation — Ghost draft:** Khi user bam Chat → dismiss draft (X) → dong app → mo lai (trong luc bot van chay va chua restart), Telegram iOS client co the khoi phuc force_reply draft. Day la Telegram client behavior, bot khong the kiem soat. User bam X lan nua la xong.
 
 **Buoc 4:** User go va gui tin nhan. Telegram gui message voi `reply_to_message.message_id` tro den prompt.
 
