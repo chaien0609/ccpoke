@@ -18,8 +18,11 @@ export const vi: TranslationKeys = {
     alreadyConnected: "ccpoke đã kết nối rồi — bot đang hoạt động bình thường.",
     connectionLost: "mất kết nối tới Telegram — đang thử kết nối lại...",
     connectionRestored: "đã kết nối lại Telegram",
-    startupReady: "🟢 *ccpoke* đã online và sẵn sàng\\.",
-    startupReadyPlain: "🟢 ccpoke đã online và sẵn sàng.",
+    pollingRestart: "polling bị treo sau mất kết nối — đang khởi động lại...",
+    pollingRestarted: "polling đã khởi động lại thành công",
+    startupReady: "🟢 *ccpoke* online \\({host}\\)",
+    startupReadyPlain: "🟢 ccpoke online ({host})",
+    instanceTakeover: "một instance ccpoke khác đã khởi động — đang tắt",
     commands: {
       start: "Kết nối bot với chat này",
       sessions: "Danh sách phiên",
@@ -250,6 +253,7 @@ export const vi: TranslationKeys = {
     started: "✅ Đã khởi động agent trong {project}",
     startFailed: "Không thể khởi động panel cho {project}",
     noTmux: "tmux không khả dụng — không thể tạo panel mới",
+    stale: "Danh sách project đã thay đổi. Hãy dùng /projects lại.",
   },
   prompt: {
     elicitationTitle: "Claude cần input",

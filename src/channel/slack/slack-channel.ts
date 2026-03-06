@@ -1,3 +1,5 @@
+import { hostname } from "node:os";
+
 import { WebClient } from "@slack/web-api";
 
 import type {
@@ -37,7 +39,9 @@ export class SlackChannel implements NotificationChannel {
     }
 
     this.sender = new SlackSender(this.client, this.cfg.slack_channel_id);
-    await this.sender.sendMessage(t("bot.startupReadyPlain"), []).catch(() => {});
+    await this.sender
+      .sendMessage(t("bot.startupReadyPlain", { host: hostname() }), [])
+      .catch(() => {});
   }
 
   async shutdown(): Promise<void> {}

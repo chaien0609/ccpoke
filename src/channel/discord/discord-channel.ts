@@ -1,3 +1,5 @@
+import { hostname } from "node:os";
+
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -124,7 +126,9 @@ export class DiscordChannel implements NotificationChannel {
     }
 
     if (this.dmChannel) {
-      sendDiscordDM(this.dmChannel, t("bot.startupReadyPlain")).catch(() => {});
+      sendDiscordDM(this.dmChannel, t("bot.startupReadyPlain", { host: hostname() })).catch(
+        () => {}
+      );
     }
   }
 

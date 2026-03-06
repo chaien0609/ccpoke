@@ -17,8 +17,11 @@ export const zh: TranslationKeys = {
     alreadyConnected: "ccpoke 已连接 — 机器人运行正常。",
     connectionLost: "与 Telegram 连接中断 — 正在重试...",
     connectionRestored: "已重新连接 Telegram",
-    startupReady: "🟢 *ccpoke* 已上线并就绪\\.",
-    startupReadyPlain: "🟢 ccpoke 已上线并就绪.",
+    pollingRestart: "轮询在断开连接后卡住 — 正在强制重启...",
+    pollingRestarted: "轮询已成功重启",
+    startupReady: "🟢 *ccpoke* 已上线 \\({host}\\)",
+    startupReadyPlain: "🟢 ccpoke 已上线 ({host})",
+    instanceTakeover: "另一个 ccpoke 实例已启动 — 正在关闭",
     commands: {
       start: "将机器人连接到此聊天",
       sessions: "列出活跃会话",
@@ -248,6 +251,7 @@ export const zh: TranslationKeys = {
     started: "✅ 已在 {project} 中启动代理",
     startFailed: "无法为 {project} 启动面板",
     noTmux: "tmux 不可用 — 无法创建新面板",
+    stale: "项目列表已更改。请重新使用 /projects。",
   },
   prompt: {
     elicitationTitle: "Claude 需要输入",

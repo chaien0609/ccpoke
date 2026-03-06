@@ -1,3 +1,6 @@
+import { randomUUID } from "node:crypto";
+import { hostname } from "node:os";
+
 import TelegramBot from "node-telegram-bot-api";
 
 import type {
@@ -31,7 +34,12 @@ export class TelegramChannel implements NotificationChannel {
   private cfg: Config;
   private chatId: number | null = null;
   private isDisconnected = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+  private lastPollingActivity = Date.now();
+  private startedAt = 0;
   private pendingReplyStore = new PendingReplyStore();
+  private instanceId = randomUUID();
   private sessionMap: SessionMap | null;
   private stateManager: SessionStateManager | null;
   private tmuxBridge: TmuxBridge | null;
@@ -58,6 +66,7 @@ export class TelegramChannel implements NotificationChannel {
     this.registerSessionsHandlers();
     this.registerProjectsHandlers();
     this.registerPollingErrorHandler();
+    this.registerTakeoverListener();
 
     this.pendingReplyStore.setOnCleanup((chatId, messageId) => {
       this.bot.deleteMessage(chatId, messageId).catch(() => {});
@@ -89,13 +98,28 @@ export class TelegramChannel implements NotificationChannel {
   }
 
   async initialize(): Promise<void> {
+    this.startedAt = Date.now();
+    this.lastPollingActivity = Date.now();
+
+    if (this.chatId) {
+      const takeoverMsg = await this.bot
+        .sendMessage(this.chatId, `__ccpoke_takeover:${this.instanceId}`)
+        .catch(() => null);
+      if (takeoverMsg) {
+        this.bot.deleteMessage(this.chatId, takeoverMsg.message_id).catch(() => {});
+      }
+    }
+
     this.bot.startPolling();
     await this.registerCommands();
     await this.registerMenuButton();
     log(t("bot.telegramStarted"));
+
     if (this.chatId) {
       this.bot
-        .sendMessage(this.chatId, t("bot.startupReady"), { parse_mode: "MarkdownV2" })
+        .sendMessage(this.chatId, t("bot.startupReady", { host: escapeMarkdownV2(hostname()) }), {
+          parse_mode: "MarkdownV2",
+        })
         .catch(() => {});
     }
   }
@@ -105,6 +129,8 @@ export class TelegramChannel implements NotificationChannel {
     this.askQuestionHandler?.destroy();
     this.permissionRequestHandler?.destroy();
     this.pendingReplyStore.destroy();
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
     this.bot.stopPolling();
   }
 
@@ -462,17 +488,26 @@ export class TelegramChannel implements NotificationChannel {
         return;
       }
 
+      const beforeCount = this.sessionMap.getAllActive().length;
       if (this.tmuxBridge) {
-        this.sessionMap.refreshFromTmux(this.tmuxBridge);
+        const result = this.sessionMap.refreshFromTmux(this.tmuxBridge);
+        logDebug(
+          `[/sessions] refresh: before=${beforeCount} after=${result.total} discovered=${result.discovered.length} removed=${result.removed.length}`
+        );
       }
 
       const sessions = this.sessionMap.getAllActive();
+      logDebug(`[/sessions] count=${sessions.length}`);
       const { text, replyMarkup } = formatSessionList(sessions);
 
       const opts: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
       if (replyMarkup) opts.reply_markup = replyMarkup;
 
-      this.bot.sendMessage(msg.chat.id, text, opts).catch(() => {});
+      this.bot.sendMessage(msg.chat.id, text, opts).catch((err) => {
+        logError("[/sessions] MarkdownV2 sendMessage failed, retrying plain text", err);
+        const plain = sessions.map((s) => `${s.project} (${s.state})`).join("\n");
+        this.bot.sendMessage(msg.chat.id, plain || t("sessions.empty")).catch(() => {});
+      });
     });
   }
 
@@ -496,7 +531,7 @@ export class TelegramChannel implements NotificationChannel {
     const project = cfg.projects[idx];
 
     if (!project || !query.message) {
-      await this.bot.answerCallbackQuery(query.id);
+      await this.bot.answerCallbackQuery(query.id, { text: t("projects.stale") });
       return;
     }
 
@@ -673,19 +708,60 @@ export class TelegramChannel implements NotificationChannel {
     });
   }
 
+  private registerTakeoverListener(): void {
+    this.bot.on("message", (msg) => {
+      if (!msg.text?.startsWith("__ccpoke_takeover:")) return;
+      if (this.chatId && msg.chat.id !== this.chatId) return;
+      const senderId = msg.text.slice("__ccpoke_takeover:".length);
+      if (senderId === this.instanceId) return;
+      log(t("bot.instanceTakeover"));
+      process.emit("SIGTERM", "SIGTERM");
+    });
+  }
+
   private registerPollingErrorHandler(): void {
+    const STALE_THRESHOLD_MS = 30_000;
+    const HEARTBEAT_INTERVAL_MS = 10_000;
+    const RESTART_DELAY_MS = 2_000;
+    const STARTUP_GRACE_MS = 15_000;
+
     this.bot.on("polling_error", () => {
+      this.lastPollingActivity = Date.now();
       if (!this.isDisconnected) {
         this.isDisconnected = true;
-        logWarn(t("bot.connectionLost"));
+        if (Date.now() - this.startedAt < STARTUP_GRACE_MS) {
+          logDebug("polling_error during startup grace — expected, suppressed");
+        } else {
+          logWarn(t("bot.connectionLost"));
+        }
       }
     });
 
     this.bot.on("polling", () => {
+      this.lastPollingActivity = Date.now();
       if (this.isDisconnected) {
         this.isDisconnected = false;
         log(t("bot.connectionRestored"));
       }
     });
+
+    this.heartbeatInterval = setInterval(() => {
+      if (this.reconnectTimer) return;
+      const staleMs = Date.now() - this.lastPollingActivity;
+      if (staleMs < STALE_THRESHOLD_MS) return;
+      logWarn(t("bot.pollingRestart"));
+      this.isDisconnected = true;
+      this.lastPollingActivity = Date.now();
+      try {
+        this.bot.stopPolling({ cancel: true, reason: "stale polling" });
+      } catch {
+        // already stopped
+      }
+      this.reconnectTimer = setTimeout(() => {
+        this.reconnectTimer = null;
+        this.bot.startPolling();
+        log(t("bot.pollingRestarted"));
+      }, RESTART_DELAY_MS);
+    }, HEARTBEAT_INTERVAL_MS);
   }
 }

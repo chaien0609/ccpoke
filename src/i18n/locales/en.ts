@@ -18,8 +18,11 @@ export const en: TranslationKeys = {
     alreadyConnected: "ccpoke is already connected — bot is running normally.",
     connectionLost: "lost connection to Telegram — retrying...",
     connectionRestored: "reconnected to Telegram",
-    startupReady: "🟢 *ccpoke* is online and ready\\.",
-    startupReadyPlain: "🟢 ccpoke is online and ready.",
+    pollingRestart: "polling stuck after disconnect — force restarting...",
+    pollingRestarted: "polling restarted successfully",
+    startupReady: "🟢 *ccpoke* online \\({host}\\)",
+    startupReadyPlain: "🟢 ccpoke online ({host})",
+    instanceTakeover: "another ccpoke instance started — shutting down",
     commands: {
       start: "Connect bot to this chat",
       sessions: "List active sessions",
@@ -250,6 +253,7 @@ export const en: TranslationKeys = {
     started: "✅ Agent started in {project}",
     startFailed: "Failed to start panel for {project}",
     noTmux: "tmux not available — cannot create new panels",
+    stale: "Project list changed. Use /projects again.",
   },
   prompt: {
     elicitationTitle: "Claude needs input",

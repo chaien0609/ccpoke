@@ -15,8 +15,11 @@ export interface TranslationKeys {
     alreadyConnected: string;
     connectionLost: string;
     connectionRestored: string;
+    pollingRestart: string;
+    pollingRestarted: string;
     startupReady: string;
     startupReadyPlain: string;
+    instanceTakeover: string;
     commands: {
       start: string;
       sessions: string;
@@ -235,6 +238,7 @@ export interface TranslationKeys {
     started: string;
     startFailed: string;
     noTmux: string;
+    stale: string;
   };
   prompt: {
     elicitationTitle: string;
