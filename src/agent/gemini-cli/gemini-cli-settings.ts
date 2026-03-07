@@ -31,6 +31,7 @@ export interface HookEventConfig {
 }
 
 const VERSION_HEADER_PATTERN = /^#\s*ccpoke-version:\s*(\S+)/;
+const VERSION_HEADER_PATTERN_WIN = /^@REM\s+ccpoke-version:\s*(\S+)/;
 const CCPOKE_MARKER = "ccpoke";
 const AGENT_PARAM = `?agent=${AgentName.GeminiCli}`;
 
@@ -77,7 +78,7 @@ export function readScriptVersion(scriptPath: string): string | null {
   try {
     const lines = readFileSync(scriptPath, "utf-8").split("\n");
     for (const line of lines.slice(0, 3)) {
-      const match = line.match(VERSION_HEADER_PATTERN);
+      const match = line.match(VERSION_HEADER_PATTERN) ?? line.match(VERSION_HEADER_PATTERN_WIN);
       if (match) return match[1] ?? null;
     }
     return null;

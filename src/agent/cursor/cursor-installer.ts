@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 
 import { ApiRoute, isWindows } from "../../utils/constants.js";
-import { getPackageVersion, paths } from "../../utils/paths.js";
+import { getPackageVersion, paths, toPosixPath } from "../../utils/paths.js";
 import { AgentName } from "../types.js";
 
 const VERSION_HEADER_PATTERN = /^#\s*ccpoke-version:\s*(\S+)/;
@@ -28,9 +28,8 @@ function hasCcpokeHook(stopHooks: CursorStopHook[]): boolean {
 }
 
 function hasExactHookPath(stopHooks: CursorStopHook[]): boolean {
-  return stopHooks.some(
-    (entry) => typeof entry.command === "string" && entry.command === paths.cursorHookScript
-  );
+  const expected = toPosixPath(paths.cursorHookScript);
+  return stopHooks.some((entry) => typeof entry.command === "string" && entry.command === expected);
 }
 
 function readScriptVersion(scriptPath: string): string | null {
@@ -72,7 +71,7 @@ export class CursorInstaller {
     );
 
     filtered.push({
-      command: paths.cursorHookScript,
+      command: toPosixPath(paths.cursorHookScript),
       timeout: 10,
     });
 

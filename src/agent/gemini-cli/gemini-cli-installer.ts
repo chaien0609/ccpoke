@@ -2,7 +2,7 @@ import { mkdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 import { isWindows } from "../../utils/constants.js";
-import { getPackageVersion, paths } from "../../utils/paths.js";
+import { getPackageVersion, paths, toPosixPath } from "../../utils/paths.js";
 import {
   buildHookConfigs,
   hasCcpokeHook,
@@ -48,8 +48,6 @@ export class GeminiCliInstaller {
   }
 
   static install(hookPort: number, hookSecret: string): void {
-    if (isWindows()) return;
-
     GeminiCliInstaller.uninstall();
 
     const settings = readGeminiSettings();
@@ -63,7 +61,7 @@ export class GeminiCliInstaller {
           {
             name: cfg.hookName,
             type: "command",
-            command: cfg.scriptPath,
+            command: toPosixPath(cfg.scriptPath),
             timeout: cfg.timeout,
           },
         ],
@@ -92,6 +90,12 @@ export class GeminiCliInstaller {
     mkdirSync(paths.hooksDir, { recursive: true });
 
     const version = getPackageVersion();
+
+    if (isWindows()) {
+      const script = `@REM ccpoke-version: ${version}\n@echo off\ncurl -s -X POST http://localhost:${hookPort}${cfg.route} -H "Content-Type: application/json" -H "X-CCPoke-Secret: ${hookSecret}" --data-binary @- > nul 2>&1\n`;
+      writeFileSync(cfg.scriptPath, script, { mode: 0o644 });
+      return;
+    }
 
     const script = `#!/bin/bash
 # ccpoke-version: ${version}

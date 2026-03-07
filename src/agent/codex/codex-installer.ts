@@ -9,7 +9,7 @@ import {
 import { dirname } from "node:path";
 
 import { ApiRoute, isWindows } from "../../utils/constants.js";
-import { getPackageVersion, paths } from "../../utils/paths.js";
+import { getPackageVersion, paths, toPosixPath } from "../../utils/paths.js";
 import { AgentName } from "../types.js";
 
 const VERSION_HEADER_PATTERN = /^#\s*ccpoke-version:\s*(\S+)/;
@@ -72,7 +72,7 @@ export class CodexInstaller {
   static install(hookPort: number, hookSecret: string): void {
     let content = readConfigFile();
     const entries = readNotifyArray(content).filter((e) => !e.includes(CCPOKE_MARKER));
-    entries.push(paths.codexHookScript);
+    entries.push(toPosixPath(paths.codexHookScript));
 
     const newLine = writeNotifyLine(entries);
     if (NOTIFY_LINE_PATTERN.test(content)) {
@@ -103,7 +103,7 @@ export class CodexInstaller {
       const entries = readNotifyArray(readConfigFile());
       if (!entries.some((e) => e.includes(CCPOKE_MARKER)))
         missing.push("notify entry in config.toml");
-      else if (!entries.includes(paths.codexHookScript))
+      else if (!entries.includes(toPosixPath(paths.codexHookScript)))
         missing.push("wrong notify script path in config.toml");
     } catch {
       missing.push("config.toml");
