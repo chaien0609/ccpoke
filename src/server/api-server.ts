@@ -63,7 +63,7 @@ export class ApiServer {
 
   private createApp(): Express {
     const app = express();
-    app.use(express.json({ limit: "10mb" }));
+    app.use(express.json({ limit: "256kb" }));
     app.get(ApiRoute.ResponseData, (req, res) => {
       logDebug(
         `[API] GET ${ApiRoute.ResponseData} id=${req.params.id} origin=${req.headers.origin ?? "none"}`

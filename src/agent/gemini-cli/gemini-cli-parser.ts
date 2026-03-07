@@ -40,6 +40,7 @@ export function parseTranscriptForUsage(transcriptPath: string): GeminiTranscrip
     if (!transcriptPath) return EMPTY_USAGE;
 
     const resolved = resolve(transcriptPath);
+    if (!paths.geminiDir) return EMPTY_USAGE;
     if (!resolved.startsWith(paths.geminiDir)) return EMPTY_USAGE;
 
     const content = readFileSync(resolved, "utf-8");

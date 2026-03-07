@@ -7,6 +7,12 @@ import type { TunnelManager } from "../utils/tunnel.js";
 import type { AgentRegistry } from "./agent-registry.js";
 import type { ChatSessionResolver } from "./chat-session-resolver.js";
 
+const TMUX_TARGET_REGEX = /^[a-zA-Z0-9_.:/@ -]+$/;
+function validateTmuxTarget(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  return TMUX_TARGET_REGEX.test(value) ? value : undefined;
+}
+
 export interface NotificationEvent {
   sessionId: string;
   tmuxTarget?: string;
@@ -254,7 +260,7 @@ export class AgentHandler {
 
     return {
       sessionId,
-      tmuxTarget: typeof obj.tmux_target === "string" ? obj.tmux_target : undefined,
+      tmuxTarget: validateTmuxTarget(obj.tmux_target),
       cwd: typeof obj.cwd === "string" ? obj.cwd : undefined,
       agent: typeof obj.agent === "string" ? obj.agent : undefined,
       questions,
@@ -281,7 +287,7 @@ export class AgentHandler {
       message,
       title: typeof obj.title === "string" ? obj.title : undefined,
       cwd: typeof obj.cwd === "string" ? obj.cwd : undefined,
-      tmuxTarget: typeof obj.tmux_target === "string" ? obj.tmux_target : undefined,
+      tmuxTarget: validateTmuxTarget(obj.tmux_target),
     };
   }
 
@@ -306,7 +312,7 @@ export class AgentHandler {
       toolInput,
       permissionMode: typeof obj.permission_mode === "string" ? obj.permission_mode : undefined,
       cwd: typeof obj.cwd === "string" ? obj.cwd : undefined,
-      tmuxTarget: typeof obj.tmux_target === "string" ? obj.tmux_target : undefined,
+      tmuxTarget: validateTmuxTarget(obj.tmux_target),
     };
   }
 }

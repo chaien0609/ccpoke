@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 
 import { isValidLocale, Locale, setLocale, t } from "./i18n/index.js";
 import { ChannelName, DEFAULT_HOOK_PORT } from "./utils/constants.js";
@@ -62,6 +62,7 @@ export class ConfigManager {
 
   static save(cfg: Config): void {
     mkdirSync(paths.ccpokeDir, { recursive: true });
+    chmodSync(paths.ccpokeDir, 0o700);
     const tmpPath = `${paths.configFile}.tmp`;
     writeFileSync(tmpPath, JSON.stringify(cfg, null, 2), { mode: 0o600 });
     renameSync(tmpPath, paths.configFile);
@@ -86,6 +87,7 @@ export class ConfigManager {
 
   static saveChatState(state: ChatState): void {
     mkdirSync(paths.ccpokeDir, { recursive: true });
+    chmodSync(paths.ccpokeDir, 0o700);
     const tmpPath = `${paths.stateFile}.tmp`;
     writeFileSync(tmpPath, JSON.stringify(state, null, 2), { mode: 0o600 });
     renameSync(tmpPath, paths.stateFile);

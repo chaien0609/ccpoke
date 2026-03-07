@@ -121,7 +121,7 @@ export class DiscordPermissionHandler {
       .setDescription(`${resultEmoji} ${resultText}`)
       .setTimestamp();
 
-    await interaction.update({ embeds: [updatedEmbed], components: [] }).catch(() => {});
+    await interaction.deferUpdate();
 
     try {
       await injectResponse(this.tmuxBridge, pp.tmuxTarget, allow);
@@ -129,6 +129,8 @@ export class DiscordPermissionHandler {
     } catch (err) {
       logError("[Discord:PermReq] injection failed", err);
     }
+
+    await interaction.editReply({ embeds: [updatedEmbed], components: [] }).catch(() => {});
 
     this.clearPending(pendingId);
   }

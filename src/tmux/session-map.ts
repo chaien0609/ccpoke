@@ -10,6 +10,7 @@ import { detectModelFromCwd, isPaneAlive, scanAgentPanes } from "./tmux-scanner.
 export const SessionState = {
   Idle: "idle",
   Busy: "busy",
+  Blocked: "blocked",
   Unknown: "unknown",
 } as const;
 export type SessionState = (typeof SessionState)[keyof typeof SessionState];
@@ -78,7 +79,10 @@ export class SessionMap {
       const oldest = [...this.sessions.entries()].sort(
         (a, b) => a[1].lastActivity.getTime() - b[1].lastActivity.getTime()
       )[0];
-      if (oldest) this.sessions.delete(oldest[0]);
+      if (oldest) {
+        this.addTombstone(oldest[0], oldest[1].tmuxTarget);
+        this.sessions.delete(oldest[0]);
+      }
     }
     this.sessions.set(sessionId, {
       sessionId,

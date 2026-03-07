@@ -29,7 +29,7 @@ export class TmuxBridge {
     execSync("sleep 0.1", { stdio: "pipe", timeout: 2000 });
     for (let i = 0; i < submitKeys.length; i++) {
       if (i > 0) execSync("sleep 0.15", { stdio: "pipe", timeout: 2000 });
-      execSync(`tmux send-keys -t ${tgt} ${submitKeys[i]}`, {
+      execSync(`tmux send-keys -t ${tgt} ${escapeShellArg(submitKeys[i]!)}`, {
         stdio: "pipe",
         timeout: 5000,
       });

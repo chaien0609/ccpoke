@@ -72,7 +72,14 @@ export function isValidStopEvent(data: unknown): data is StopEvent {
 
 export function parseTranscript(transcriptPath: string): TranscriptSummary {
   const expandedPath = expandHome(transcriptPath);
-  const raw = readFileSync(expandedPath, "utf-8");
+
+  let raw: string;
+  try {
+    raw = readFileSync(expandedPath, "utf-8");
+  } catch {
+    return { lastAssistantMessage: "", model: "" };
+  }
+
   const lines = raw.split("\n");
 
   let lastAssistantText = "";

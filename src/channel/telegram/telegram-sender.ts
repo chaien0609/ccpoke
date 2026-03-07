@@ -6,6 +6,8 @@ import { logError } from "../../utils/log.js";
 const TELEGRAM_MAX_MESSAGE_LENGTH = 4096;
 const PAGINATION_FOOTER_RESERVE = 30;
 const SPLIT_LOOKBACK_RANGE = 200;
+const RETRY_DELAYS_MS = [1000, 2000, 4000];
+const MAX_RETRIES = RETRY_DELAYS_MS.length;
 
 export async function sendTelegramMessage(
   bot: TelegramBot,
@@ -29,23 +31,48 @@ export async function sendTelegramMessage(
       opts.reply_markup = buildResponseReplyMarkup(responseUrl, sessionId);
     }
 
+    await sendWithRetry(bot, chatId, content, pages[i]!, opts, isLastPage, responseUrl, sessionId);
+  }
+}
+
+async function sendWithRetry(
+  bot: TelegramBot,
+  chatId: number,
+  content: string,
+  rawContent: string,
+  opts: TelegramBot.SendMessageOptions,
+  isLastPage: boolean,
+  responseUrl?: string,
+  sessionId?: string
+): Promise<void> {
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      await bot.sendMessage(chatId, content, opts);
-    } catch (err) {
-      logError(t("bot.sendFailed"), err);
-      const fallbackOpts: TelegramBot.SendMessageOptions = {};
-      if (isLastPage && responseUrl) {
-        fallbackOpts.reply_markup = buildResponseReplyMarkup(responseUrl, sessionId);
-      }
-      try {
-        await bot.sendMessage(chatId, pages[i]!, fallbackOpts);
-      } catch (err2) {
-        logError(t("bot.sendFallbackFailed"), err2);
-        try {
-          await bot.sendMessage(chatId, pages[i]!);
-        } catch {
-          // final fallback exhausted, message lost
+      // First attempt: MarkdownV2 with full formatting
+      // Subsequent attempts: plain text fallbacks
+      if (attempt === 0) {
+        await bot.sendMessage(chatId, content, opts);
+      } else if (attempt === 1) {
+        const fallbackOpts: TelegramBot.SendMessageOptions = {};
+        if (isLastPage && responseUrl) {
+          fallbackOpts.reply_markup = buildResponseReplyMarkup(responseUrl, sessionId);
         }
+        await bot.sendMessage(chatId, rawContent, fallbackOpts);
+      } else {
+        await bot.sendMessage(chatId, rawContent);
+      }
+      return;
+    } catch (error: any) {
+      const isLastAttempt = attempt === MAX_RETRIES - 1;
+
+      if (error?.response?.statusCode === 429) {
+        const retryAfter =
+          error?.response?.parameters?.retry_after ?? RETRY_DELAYS_MS[attempt]! / 1000;
+        await new Promise((r) => setTimeout(r, retryAfter * 1000));
+      } else if (!isLastAttempt) {
+        logError(attempt === 0 ? t("bot.sendFailed") : t("bot.sendFallbackFailed"), error);
+        await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt]!));
+      } else {
+        logError(t("bot.sendFallbackFailed"), error);
       }
     }
   }
