@@ -51,6 +51,7 @@ export const ApiRoute = {
 
 export const DEFAULT_HOOK_PORT = 9377;
 export const MINI_APP_BASE_URL = "https://kaida-palooza.github.io/ccpoke";
+export const CCPOKE_MARKER = "ccpoke";
 
 export const ChannelName = {
   Telegram: "telegram",

@@ -11,7 +11,7 @@ import {
   type AgentEventResult,
   type AgentProvider,
 } from "../types.js";
-import { CursorInstaller } from "./cursor-installer.js";
+import { cursorInstaller } from "./cursor-installer.js";
 import {
   extractProjectName,
   isValidStopEvent,
@@ -31,19 +31,19 @@ export class CursorProvider implements AgentProvider {
   }
 
   isHookInstalled(): boolean {
-    return CursorInstaller.isInstalled();
+    return cursorInstaller.isInstalled();
   }
 
   installHook(): void {
-    CursorInstaller.install();
+    cursorInstaller.install();
   }
 
   uninstallHook(): void {
-    CursorInstaller.uninstall();
+    cursorInstaller.uninstall();
   }
 
   verifyIntegrity(): { complete: boolean; missing: string[] } {
-    return CursorInstaller.verifyIntegrity();
+    return cursorInstaller.verifyIntegrity();
   }
 
   parseEvent(raw: unknown): AgentEventResult {

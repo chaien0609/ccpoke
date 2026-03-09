@@ -9,7 +9,7 @@ import {
   type AgentEventResult,
   type AgentProvider,
 } from "../types.js";
-import { CodexInstaller } from "./codex-installer.js";
+import { codexInstaller } from "./codex-installer.js";
 import {
   extractProjectName,
   isValidNotifyEvent,
@@ -30,19 +30,19 @@ export class CodexProvider implements AgentProvider {
   }
 
   isHookInstalled(): boolean {
-    return CodexInstaller.isInstalled();
+    return codexInstaller.isInstalled();
   }
 
   installHook(): void {
-    CodexInstaller.install();
+    codexInstaller.install();
   }
 
   uninstallHook(): void {
-    CodexInstaller.uninstall();
+    codexInstaller.uninstall();
   }
 
   verifyIntegrity(): { complete: boolean; missing: string[] } {
-    return CodexInstaller.verifyIntegrity();
+    return codexInstaller.verifyIntegrity();
   }
 
   parseEvent(raw: unknown): AgentEventResult {

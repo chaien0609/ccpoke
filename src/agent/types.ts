@@ -17,6 +17,18 @@ export const AGENT_DISPLAY_NAMES: Record<AgentName, string> = {
   [AgentName.OpenCode]: "OpenCode",
 };
 
+export interface IntegrityResult {
+  complete: boolean;
+  missing: string[];
+}
+
+export interface AgentInstaller {
+  isInstalled(): boolean;
+  verifyIntegrity(): IntegrityResult;
+  install(): void;
+  uninstall(): void;
+}
+
 export interface AgentProvider {
   readonly name: AgentName;
   readonly displayName: string;
@@ -28,7 +40,7 @@ export interface AgentProvider {
   installHook(): void;
   uninstallHook(): void;
   parseEvent(raw: unknown): AgentEventResult;
-  verifyIntegrity(): { complete: boolean; missing: string[] };
+  verifyIntegrity(): IntegrityResult;
 }
 
 export interface AgentEventResult {

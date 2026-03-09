@@ -1,39 +1,51 @@
-import { mkdirSync, renameSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
-
 import { HookScriptCopier } from "../../hooks/hook-script-copier.js";
+import { readJsonFile, writeJsonFile } from "../../utils/atomic-file.js";
 import { isWindows } from "../../utils/constants.js";
 import { paths, toPosixPath } from "../../utils/paths.js";
+import type { AgentInstaller, IntegrityResult } from "../types.js";
 import {
   buildHookConfigs,
   hasCcpokeHook,
   isScriptCurrent,
   isScriptPresent,
-  readGeminiSettings,
+  type GeminiSettings,
 } from "./gemini-cli-settings.js";
 
-const GEMINI_SOURCE_MAP: Record<string, string> = {
+const SOURCE_MAP: Record<string, string> = {
   "ccpoke-stop": "gemini-stop",
   "ccpoke-session-start": "gemini-session-start",
   "ccpoke-notification": "gemini-notification",
 };
 
-export class GeminiCliInstaller {
-  static isInstalled(): boolean {
+function copyScripts(): void {
+  HookScriptCopier.copyLib();
+  const ext = isWindows() ? ".cmd" : ".sh";
+
+  for (const cfg of buildHookConfigs()) {
+    const baseName = SOURCE_MAP[cfg.hookName];
+    const sourceFile = baseName ? `${baseName}${ext}` : undefined;
+    if (sourceFile) {
+      HookScriptCopier.copy(sourceFile, cfg.scriptPath);
+    }
+  }
+}
+
+export const geminiCliInstaller = {
+  isInstalled(): boolean {
     try {
-      const settings = readGeminiSettings();
+      const settings = readJsonFile<GeminiSettings>(paths.geminiSettings, {});
       if (!settings.hooks) return false;
       return buildHookConfigs().every((cfg) => hasCcpokeHook(settings.hooks?.[cfg.event] ?? []));
     } catch {
       return false;
     }
-  }
+  },
 
-  static verifyIntegrity(): { complete: boolean; missing: string[] } {
+  verifyIntegrity(): IntegrityResult {
     const missing: string[] = [];
 
     try {
-      const settings = readGeminiSettings();
+      const settings = readJsonFile<GeminiSettings>(paths.geminiSettings, {});
       for (const cfg of buildHookConfigs()) {
         if (!hasCcpokeHook(settings.hooks?.[cfg.event] ?? []))
           missing.push(`${cfg.event} hook in settings`);
@@ -43,9 +55,8 @@ export class GeminiCliInstaller {
     }
 
     const ext = isWindows() ? ".cmd" : ".sh";
-
     for (const cfg of buildHookConfigs()) {
-      const baseName = GEMINI_SOURCE_MAP[cfg.hookName];
+      const baseName = SOURCE_MAP[cfg.hookName];
       const sourceFile = baseName ? `${baseName}${ext}` : undefined;
       if (!isScriptPresent(cfg.scriptPath)) {
         missing.push(`${cfg.hookName} script file`);
@@ -55,66 +66,49 @@ export class GeminiCliInstaller {
     }
 
     return { complete: missing.length === 0, missing };
-  }
+  },
 
-  static install(): void {
-    GeminiCliInstaller.uninstall();
+  install(): void {
+    geminiCliInstaller.uninstall();
 
-    const settings = readGeminiSettings();
-    if (!settings.hooks) settings.hooks = {};
-
-    for (const cfg of buildHookConfigs()) {
-      const existing = (settings.hooks[cfg.event] ?? []).filter((e) => !hasCcpokeHook([e]));
-      existing.push({
-        matcher: cfg.matcher,
-        hooks: [
-          {
-            name: cfg.hookName,
-            type: "command",
-            command: toPosixPath(cfg.scriptPath),
-            timeout: cfg.timeout,
-          },
-        ],
-      });
-      settings.hooks[cfg.event] = existing;
+    const settings = readJsonFile<GeminiSettings>(paths.geminiSettings, {});
+    if (!settings.hooks) {
+      settings.hooks = {};
     }
 
-    mkdirSync(dirname(paths.geminiSettings), { recursive: true });
-    const tmp = `${paths.geminiSettings}.tmp`;
-    writeFileSync(tmp, JSON.stringify(settings, null, 2));
-    renameSync(tmp, paths.geminiSettings);
-
-    GeminiCliInstaller.copyScripts();
-  }
-
-  static uninstall(): void {
-    GeminiCliInstaller.removeFromSettings();
     for (const cfg of buildHookConfigs()) {
-      HookScriptCopier.remove(cfg.scriptPath);
+      settings.hooks[cfg.event] = [
+        ...(settings.hooks[cfg.event] ?? []),
+        {
+          matcher: cfg.matcher,
+          hooks: [
+            {
+              name: cfg.hookName,
+              type: "command",
+              command: toPosixPath(cfg.scriptPath),
+              timeout: cfg.timeout,
+            },
+          ],
+        },
+      ];
     }
-  }
 
-  private static copyScripts(): void {
-    HookScriptCopier.copyLib();
-    const ext = isWindows() ? ".cmd" : ".sh";
+    writeJsonFile(paths.geminiSettings, settings);
+    copyScripts();
+  },
 
-    for (const cfg of buildHookConfigs()) {
-      const baseName = GEMINI_SOURCE_MAP[cfg.hookName];
-      const sourceFile = baseName ? `${baseName}${ext}` : undefined;
-      if (sourceFile) {
-        HookScriptCopier.copy(sourceFile, cfg.scriptPath);
-      }
-    }
-  }
-
-  private static removeFromSettings(): void {
+  uninstall(): void {
     try {
-      const settings = readGeminiSettings();
-      if (!settings.hooks) return;
+      const settings = readJsonFile<GeminiSettings>(paths.geminiSettings, {});
+      if (!settings.hooks) {
+        return;
+      }
 
       for (const event of Object.keys(settings.hooks)) {
         const entries = settings.hooks[event];
-        if (!entries) continue;
+        if (!entries) {
+          continue;
+        }
 
         const filtered = entries.filter((e) => !hasCcpokeHook([e]));
         if (filtered.length === 0) {
@@ -128,11 +122,13 @@ export class GeminiCliInstaller {
         delete settings.hooks;
       }
 
-      const tmp = `${paths.geminiSettings}.tmp`;
-      writeFileSync(tmp, JSON.stringify(settings, null, 2));
-      renameSync(tmp, paths.geminiSettings);
+      writeJsonFile(paths.geminiSettings, settings);
     } catch {
       /* settings may not exist */
     }
-  }
-}
+
+    for (const cfg of buildHookConfigs()) {
+      HookScriptCopier.remove(cfg.scriptPath);
+    }
+  },
+} satisfies AgentInstaller;

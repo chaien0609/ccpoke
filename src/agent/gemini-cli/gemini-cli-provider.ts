@@ -9,7 +9,7 @@ import {
   type AgentEventResult,
   type AgentProvider,
 } from "../types.js";
-import { GeminiCliInstaller } from "./gemini-cli-installer.js";
+import { geminiCliInstaller } from "./gemini-cli-installer.js";
 import {
   extractProjectName,
   isValidAfterAgentEvent,
@@ -28,19 +28,19 @@ export class GeminiCliProvider implements AgentProvider {
   }
 
   isHookInstalled(): boolean {
-    return GeminiCliInstaller.isInstalled();
+    return geminiCliInstaller.isInstalled();
   }
 
   installHook(): void {
-    GeminiCliInstaller.install();
+    geminiCliInstaller.install();
   }
 
   uninstallHook(): void {
-    GeminiCliInstaller.uninstall();
+    geminiCliInstaller.uninstall();
   }
 
   verifyIntegrity(): { complete: boolean; missing: string[] } {
-    return GeminiCliInstaller.verifyIntegrity();
+    return geminiCliInstaller.verifyIntegrity();
   }
 
   parseEvent(raw: unknown): AgentEventResult {

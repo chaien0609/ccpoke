@@ -1,7 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 
 import { HookScriptCopier } from "../../hooks/hook-script-copier.js";
-import { ApiRoute } from "../../utils/constants.js";
+import { ApiRoute, CCPOKE_MARKER } from "../../utils/constants.js";
 import { paths } from "../../utils/paths.js";
 import { AgentName } from "../types.js";
 
@@ -31,7 +31,6 @@ export interface HookEventConfig {
   timeout: number;
 }
 
-const CCPOKE_MARKER = "ccpoke";
 const AGENT_PARAM = `?agent=${AgentName.GeminiCli}`;
 
 export function buildHookConfigs(): HookEventConfig[] {
@@ -71,16 +70,6 @@ export function hasCcpokeHook(entries: GeminiHookEntry[]): boolean {
         (typeof h.name === "string" && h.name.includes(CCPOKE_MARKER))
     )
   );
-}
-
-export function readGeminiSettings(): GeminiSettings {
-  try {
-    return JSON.parse(readFileSync(paths.geminiSettings, "utf-8"));
-  } catch (err: unknown) {
-    const isFileNotFound = err instanceof Error && (err as NodeJS.ErrnoException).code === "ENOENT";
-    if (isFileNotFound) return {};
-    throw err;
-  }
 }
 
 export function isScriptPresent(scriptPath: string): boolean {

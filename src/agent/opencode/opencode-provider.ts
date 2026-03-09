@@ -9,7 +9,7 @@ import {
   type AgentEventResult,
   type AgentProvider,
 } from "../types.js";
-import { OpencodeInstaller } from "./opencode-installer.js";
+import { opencodeInstaller } from "./opencode-installer.js";
 import { extractProjectName, isValidOpencodeEvent, parseOpencodeEvent } from "./opencode-parser.js";
 
 export class OpencodeProvider implements AgentProvider {
@@ -23,19 +23,19 @@ export class OpencodeProvider implements AgentProvider {
   }
 
   isHookInstalled(): boolean {
-    return OpencodeInstaller.isInstalled();
+    return opencodeInstaller.isInstalled();
   }
 
   installHook(): void {
-    OpencodeInstaller.install();
+    opencodeInstaller.install();
   }
 
   uninstallHook(): void {
-    OpencodeInstaller.uninstall();
+    opencodeInstaller.uninstall();
   }
 
   verifyIntegrity(): { complete: boolean; missing: string[] } {
-    return OpencodeInstaller.verifyIntegrity();
+    return opencodeInstaller.verifyIntegrity();
   }
 
   parseEvent(raw: unknown): AgentEventResult {

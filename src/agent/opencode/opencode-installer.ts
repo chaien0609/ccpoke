@@ -2,13 +2,14 @@ import { existsSync, mkdirSync, unlinkSync } from "node:fs";
 
 import { HookScriptCopier } from "../../hooks/hook-script-copier.js";
 import { paths } from "../../utils/paths.js";
+import type { AgentInstaller, IntegrityResult } from "../types.js";
 
-export class OpencodeInstaller {
-  static isInstalled(): boolean {
+export const opencodeInstaller = {
+  isInstalled(): boolean {
     return existsSync(paths.opencodePluginFile);
-  }
+  },
 
-  static verifyIntegrity(): { complete: boolean; missing: string[] } {
+  verifyIntegrity(): IntegrityResult {
     const missing: string[] = [];
 
     if (!existsSync(paths.opencodePluginFile)) {
@@ -18,19 +19,19 @@ export class OpencodeInstaller {
     }
 
     return { complete: missing.length === 0, missing };
-  }
+  },
 
-  static install(): void {
-    OpencodeInstaller.uninstall();
+  install(): void {
+    opencodeInstaller.uninstall();
     mkdirSync(paths.opencodePluginsDir, { recursive: true });
     HookScriptCopier.copy("opencode-notify.js", paths.opencodePluginFile);
-  }
+  },
 
-  static uninstall(): void {
+  uninstall(): void {
     try {
       unlinkSync(paths.opencodePluginFile);
     } catch {
       /* may not exist */
     }
-  }
-}
+  },
+} satisfies AgentInstaller;

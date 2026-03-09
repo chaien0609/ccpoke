@@ -10,7 +10,7 @@ import {
   type AgentEventResult,
   type AgentProvider,
 } from "../types.js";
-import { ClaudeCodeInstaller } from "./claude-code-installer.js";
+import { claudeCodeInstaller } from "./claude-code-installer.js";
 import { extractProjectName, isValidStopEvent, parseTranscript } from "./claude-code-parser.js";
 
 const TRANSCRIPT_SETTLE_DELAY_MS = 500;
@@ -26,19 +26,19 @@ export class ClaudeCodeProvider implements AgentProvider {
   }
 
   isHookInstalled(): boolean {
-    return ClaudeCodeInstaller.isInstalled();
+    return claudeCodeInstaller.isInstalled();
   }
 
   installHook(): void {
-    ClaudeCodeInstaller.install();
+    claudeCodeInstaller.install();
   }
 
   uninstallHook(): void {
-    ClaudeCodeInstaller.uninstall();
+    claudeCodeInstaller.uninstall();
   }
 
   verifyIntegrity(): { complete: boolean; missing: string[] } {
-    return ClaudeCodeInstaller.verifyIntegrity();
+    return claudeCodeInstaller.verifyIntegrity();
   }
 
   parseEvent(raw: unknown): AgentEventResult {
