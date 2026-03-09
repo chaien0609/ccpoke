@@ -9,13 +9,9 @@ CCPOKE_HOST="${CCPOKE_HOST:-localhost}"
 
 ccpoke_detect_tmux() {
   CCPOKE_TMUX_TARGET=""
-  if [ -n "$TMUX_PANE" ]; then
-    CCPOKE_TMUX_TARGET=$(tmux display-message -t "$TMUX_PANE" \
-      -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || echo "")
-  elif [ -n "$TMUX" ]; then
-    CCPOKE_TMUX_TARGET=$(tmux display-message \
-      -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || echo "")
-  fi
+  [ -n "$TMUX_PANE" ] || return 0
+  CCPOKE_TMUX_TARGET=$(tmux display-message -t "$TMUX_PANE" \
+    -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || echo "")
 }
 
 ccpoke_inject_tmux() {

@@ -230,6 +230,15 @@ export class DiscordSessionCommandHandler {
     try {
       const { paneTarget, needsTrust } = launchAgent(this.tmuxBridge, project.path, agentKey);
 
+      this.sessionMap.register(
+        `pre-${paneTarget.replace(/[:.]/g, "-")}`,
+        paneTarget,
+        project.name,
+        project.path,
+        "",
+        agentKey as AgentName
+      );
+
       if (needsTrust) {
         autoTrustWorkspace(
           this.tmuxBridge,

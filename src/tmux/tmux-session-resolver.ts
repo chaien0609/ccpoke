@@ -23,6 +23,15 @@ export class TmuxSessionResolver implements ChatSessionResolver {
       `[Resolver] input: agentSessionId=${agentSessionId} project=${projectName} cwd=${cwd ?? "NONE"} tmuxTarget=${tmuxTarget ?? "NONE"}`
     );
 
+    if (agentSessionId) {
+      const cached = this.agentToTmux.get(agentSessionId);
+      if (cached && this.sessionMap.getBySessionId(cached)) {
+        logDebug(`[Resolver] matched by cache: ${agentSessionId} → ${cached}`);
+        return cached;
+      }
+      this.agentToTmux.delete(agentSessionId);
+    }
+
     if (tmuxTarget) {
       const exactMatch = this.findByTmuxTarget(tmuxTarget);
       if (exactMatch) {
@@ -31,15 +40,6 @@ export class TmuxSessionResolver implements ChatSessionResolver {
         return exactMatch;
       }
       logDebug(`[Resolver] NO match for tmuxTarget=${tmuxTarget}`);
-    }
-
-    if (agentSessionId) {
-      const cached = this.agentToTmux.get(agentSessionId);
-      if (cached && this.sessionMap.getBySessionId(cached)) {
-        logDebug(`[Resolver] matched by cache: ${agentSessionId} → ${cached}`);
-        return cached;
-      }
-      this.agentToTmux.delete(agentSessionId);
     }
 
     const tmuxSessionId = this.findByProject(projectName, cwd);
