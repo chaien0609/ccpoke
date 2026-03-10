@@ -17,7 +17,7 @@ import type { SessionMap } from "../../tmux/session-map.js";
 import type { SessionStateManager } from "../../tmux/session-state.js";
 import type { TmuxBridge } from "../../tmux/tmux-bridge.js";
 import { log, logError } from "../../utils/log.js";
-import { autoTrustWorkspace, launchAgent } from "./discord-agent-launcher.js";
+import { autoAcceptStartupPrompts, launchAgent } from "./discord-agent-launcher.js";
 
 export class DiscordSessionCommandHandler {
   constructor(
@@ -240,7 +240,7 @@ export class DiscordSessionCommandHandler {
       );
 
       if (needsTrust) {
-        autoTrustWorkspace(
+        autoAcceptStartupPrompts(
           this.tmuxBridge,
           paneTarget,
           agentKey,

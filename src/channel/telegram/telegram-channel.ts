@@ -18,7 +18,7 @@ import type { TmuxBridge } from "../../tmux/tmux-bridge.js";
 import { log, logDebug, logError, logWarn } from "../../utils/log.js";
 import { extractProseSnippet } from "../../utils/markdown.js";
 import { formatModelName } from "../../utils/stats-format.js";
-import { autoTrustWorkspace, launchAgent } from "../agent-launcher.js";
+import { autoAcceptStartupPrompts, launchAgent } from "../agent-launcher.js";
 import type { ChannelDeps, NotificationChannel, NotificationData } from "../types.js";
 import { AskQuestionHandler } from "./ask-question-handler.js";
 import { escapeMarkdownV2, isInlineMessage, markdownToTelegramV2 } from "./escape-markdown.js";
@@ -627,7 +627,7 @@ export class TelegramChannel implements NotificationChannel {
       );
 
       if (needsTrust) {
-        autoTrustWorkspace(
+        autoAcceptStartupPrompts(
           this.tmuxBridge,
           paneTarget,
           agentKey,
