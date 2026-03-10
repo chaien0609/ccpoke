@@ -234,6 +234,7 @@ export const zh: TranslationKeys = {
   chat: {
     placeholder: "给 Claude 发消息...",
     replyHint: "在下方输入消息 ↓",
+    directMessageHint: "使用 /sessions → 选择会话 → 💬 Chat 发送消息。",
     sessionExpired: "会话已过期或关闭",
     sessionNotFound: "未找到会话",
     tmuxDead: "tmux 会话已断开",

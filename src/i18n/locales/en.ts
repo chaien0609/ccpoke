@@ -237,6 +237,7 @@ export const en: TranslationKeys = {
   chat: {
     placeholder: "Message to Claude...",
     replyHint: "Type your message below ↓",
+    directMessageHint: "Use /sessions → tap a session → 💬 Chat to send messages.",
     sessionExpired: "Session expired or closed",
     sessionNotFound: "Session not found",
     tmuxDead: "tmux session disconnected",

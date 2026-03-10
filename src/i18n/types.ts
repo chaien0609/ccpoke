@@ -220,6 +220,7 @@ export interface TranslationKeys {
   chat: {
     placeholder: string;
     replyHint: string;
+    directMessageHint: string;
     sessionExpired: string;
     sessionNotFound: string;
     tmuxDead: string;

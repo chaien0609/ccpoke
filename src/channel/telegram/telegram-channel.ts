@@ -34,6 +34,7 @@ export class TelegramChannel implements NotificationChannel {
   private cfg: Config;
   private chatId: number | null = null;
   private isDisconnected = false;
+  private consecutivePollingErrors = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private lastPollingActivity = Date.now();
@@ -374,6 +375,18 @@ export class TelegramChannel implements NotificationChannel {
         `[TG:msg] msgId=${msg.message_id} from=${msg.from?.id ?? "?"} chatId=${msg.chat.id} hasReply=${!!msg.reply_to_message} hasText=${!!msg.text}`
       );
       if (!msg.reply_to_message) {
+        if (
+          msg.text &&
+          !msg.text.startsWith("/") &&
+          !msg.text.startsWith("__ccpoke_") &&
+          ConfigManager.isOwner(this.cfg, msg.from?.id ?? 0)
+        ) {
+          await this.bot
+            .sendMessage(msg.chat.id, t("chat.directMessageHint"), {
+              reply_to_message_id: msg.message_id,
+            })
+            .catch(() => {});
+        }
         logDebug(`[TG:msg] dropped: no reply_to_message msgId=${msg.message_id}`);
         return;
       }
@@ -765,6 +778,7 @@ export class TelegramChannel implements NotificationChannel {
       const uid = update.update_id as number;
       const key = `uid:${uid}`;
       this.lastPollingActivity = Date.now();
+      this.consecutivePollingErrors = 0;
       if (this.isDisconnected) {
         this.isDisconnected = false;
         log(t("bot.connectionRestored"));
@@ -804,14 +818,18 @@ export class TelegramChannel implements NotificationChannel {
     const HEARTBEAT_INTERVAL_MS = 10_000;
     const RESTART_DELAY_MS = 2_000;
     const STARTUP_GRACE_MS = 15_000;
+    const DISCONNECT_THRESHOLD = 3;
 
-    this.bot.on("polling_error", () => {
+    this.bot.on("polling_error", (err: unknown) => {
       this.lastPollingActivity = Date.now();
-      if (!this.isDisconnected) {
+      this.consecutivePollingErrors++;
+
+      const errMsg = err instanceof Error ? err.message : String(err ?? "unknown");
+      logDebug(`[Polling] error #${this.consecutivePollingErrors}: ${errMsg}`);
+
+      if (!this.isDisconnected && this.consecutivePollingErrors >= DISCONNECT_THRESHOLD) {
         this.isDisconnected = true;
-        if (Date.now() - this.startedAt < STARTUP_GRACE_MS) {
-          logDebug("polling_error during startup grace — expected, suppressed");
-        } else {
+        if (Date.now() - this.startedAt >= STARTUP_GRACE_MS) {
           logWarn(t("bot.connectionLost"));
         }
       }
@@ -819,6 +837,7 @@ export class TelegramChannel implements NotificationChannel {
 
     this.heartbeatInterval = setInterval(() => {
       if (this.reconnectTimer) return;
+      if (Date.now() - this.startedAt < STARTUP_GRACE_MS) return;
       const staleMs = Date.now() - this.lastPollingActivity;
       if (staleMs < STALE_THRESHOLD_MS) return;
       logWarn(t("bot.pollingRestart"));
@@ -826,6 +845,10 @@ export class TelegramChannel implements NotificationChannel {
       this.lastPollingActivity = Date.now();
       this.reconnectTimer = setTimeout(async () => {
         try {
+          const polling = (this.bot as unknown as Record<string, unknown>)._polling as
+            | { _abort?: boolean }
+            | undefined;
+          if (polling) polling._abort = true;
           await this.bot.stopPolling({ cancel: true, reason: "stale polling" });
         } catch {
           // already stopped

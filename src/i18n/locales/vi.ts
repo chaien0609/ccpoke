@@ -237,6 +237,7 @@ export const vi: TranslationKeys = {
   chat: {
     placeholder: "Nhắn cho Claude...",
     replyHint: "Nhập tin nhắn bên dưới ↓",
+    directMessageHint: "Dùng /sessions → chọn session → 💬 Chat để gửi tin nhắn.",
     sessionExpired: "Session đã hết hạn hoặc đóng",
     sessionNotFound: "Không tìm thấy session",
     tmuxDead: "tmux session đã ngắt kết nối",
