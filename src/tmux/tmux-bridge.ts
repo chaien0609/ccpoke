@@ -147,7 +147,6 @@ export class TmuxBridge {
   }
 
   createPane(sessionName: string, cwd: string): string {
-    this.ensureServer();
     const bin = getTmuxBinary();
     const dir = escapeShellArg(cwd);
     const formatArg = escapeShellArg("#{session_name}:#{window_index}.#{pane_index}");
@@ -161,6 +160,7 @@ export class TmuxBridge {
         stdio: "pipe",
         timeout: 5000,
       }).trim();
+      if (!paneTarget) paneTarget = `${sessionName}:0.0`;
     } else {
       const target = escapeShellArg(`${sessionName}:0`);
       paneTarget = execSync(`${bin} split-window -t ${target} -c ${dir} -P -F ${formatArg}`, {
@@ -168,6 +168,10 @@ export class TmuxBridge {
         stdio: "pipe",
         timeout: 5000,
       }).trim();
+
+      if (!paneTarget) {
+        paneTarget = this.resolveLastPane(bin, sessionName);
+      }
 
       execSync(`${bin} select-layout -t ${target} tiled`, {
         stdio: "pipe",
@@ -182,13 +186,19 @@ export class TmuxBridge {
     return paneTarget;
   }
 
-  private ensureServer(): void {
-    if (!isWindows()) return;
-    const bin = getTmuxBinary();
+  private resolveLastPane(bin: string, sessionName: string): string {
     try {
-      execSync(`${bin} start-server`, { stdio: "pipe", timeout: 3000 });
+      const formatArg = escapeShellArg("#{session_name}:#{window_index}.#{pane_index}");
+      return execSync(`${bin} list-panes -t ${escapeShellArg(sessionName)} -F ${formatArg}`, {
+        encoding: "utf-8",
+        stdio: "pipe",
+        timeout: 3000,
+      })
+        .trim()
+        .split("\n")
+        .pop()!;
     } catch {
-      // server may already be running or start-server not supported
+      return `${sessionName}:0.0`;
     }
   }
 
