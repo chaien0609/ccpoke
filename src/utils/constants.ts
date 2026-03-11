@@ -26,6 +26,7 @@ export const CliCommand = {
   Help: "help",
   HelpFlag: "--help",
   HelpShort: "-h",
+  Bug: "bug",
 } as const;
 
 export type CliCommand = (typeof CliCommand)[keyof typeof CliCommand];

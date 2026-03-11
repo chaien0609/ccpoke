@@ -168,6 +168,7 @@ export const en: TranslationKeys = {
     cmdHelp: "  help        Show this help message",
     cmdProject: "  project     Manage registered projects",
     cmdChannel: "  channel     Switch notification channel (telegram/discord/slack)",
+    cmdBug: "  bug         Report a bug (collects diagnostics + logs)",
     docs: "docs → https://github.com/kaida-palooza/ccpoke",
   },
 
@@ -330,5 +331,19 @@ export const en: TranslationKeys = {
     cancelled: "Cancelled.",
     notConfigured: '"{channel}" is not configured yet.',
     configureNow: "Configure {channel} now?",
+  },
+  bug: {
+    intro: "🐛 ccpoke bug report",
+    descriptionPrompt: "Describe the bug briefly",
+    descriptionPlaceholder: "e.g. notifications stopped arriving after update",
+    cancelled: "Bug report cancelled.",
+    collecting: "Collecting diagnostics...",
+    saved: "Report saved → {path}",
+    openingFolder: "Opening file location...",
+    issueLink: "Open this link to create a GitHub issue:",
+    attachHint: "📎 Please attach the bug-report .txt file below",
+    instructions:
+      "Done!\n\n  1. Open the GitHub link above\n  2. Drag the .txt file into the issue\n  3. Submit",
+    noLogFile: "No log file found at {path} — diagnostics only",
   },
 };

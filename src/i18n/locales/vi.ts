@@ -168,6 +168,7 @@ export const vi: TranslationKeys = {
     cmdHelp: "  help        Hiện hướng dẫn này",
     cmdProject: "  project     Quản lý project đã đăng ký",
     cmdChannel: "  channel     Chuyển kênh thông báo (telegram/discord/slack)",
+    cmdBug: "  bug         Báo lỗi (thu thập thông tin chẩn đoán + log)",
     docs: "docs → https://github.com/kaida-palooza/ccpoke",
   },
 
@@ -330,5 +331,18 @@ export const vi: TranslationKeys = {
     cancelled: "Đã hủy.",
     notConfigured: '"{channel}" chưa được cấu hình.',
     configureNow: "Cấu hình {channel} ngay?",
+  },
+  bug: {
+    intro: "🐛 ccpoke báo lỗi",
+    descriptionPrompt: "Mô tả ngắn gọn lỗi gặp phải",
+    descriptionPlaceholder: "vd: notification ngừng hoạt động sau khi cập nhật",
+    cancelled: "Đã hủy báo lỗi.",
+    collecting: "Đang thu thập thông tin chẩn đoán...",
+    saved: "Đã lưu báo cáo → {path}",
+    openingFolder: "Đang mở vị trí file...",
+    issueLink: "Mở link này để tạo GitHub issue:",
+    attachHint: "📎 Hãy đính kèm file bug-report .txt bên dưới",
+    instructions: "Xong!\n\n  1. Mở link GitHub ở trên\n  2. Kéo file .txt vào issue\n  3. Gửi",
+    noLogFile: "Không tìm thấy log tại {path} — chỉ có thông tin chẩn đoán",
   },
 };

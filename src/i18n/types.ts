@@ -155,6 +155,7 @@ export interface TranslationKeys {
     cmdHelp: string;
     cmdProject: string;
     cmdChannel: string;
+    cmdBug: string;
     docs: string;
   };
   hook: {
@@ -312,5 +313,18 @@ export interface TranslationKeys {
     cancelled: string;
     notConfigured: string;
     configureNow: string;
+  };
+  bug: {
+    intro: string;
+    descriptionPrompt: string;
+    descriptionPlaceholder: string;
+    cancelled: string;
+    collecting: string;
+    saved: string;
+    openingFolder: string;
+    issueLink: string;
+    attachHint: string;
+    instructions: string;
+    noLogFile: string;
   };
 }

@@ -165,6 +165,7 @@ export const zh: TranslationKeys = {
     cmdHelp: "  help        显示此帮助信息",
     cmdProject: "  project     管理已注册项目",
     cmdChannel: "  channel     切换通知渠道 (telegram/discord/slack)",
+    cmdBug: "  bug         报告 bug（收集诊断信息 + 日志）",
     docs: "文档 → https://github.com/kaida-palooza/ccpoke",
   },
 
@@ -326,5 +327,18 @@ export const zh: TranslationKeys = {
     cancelled: "已取消。",
     notConfigured: '"{channel}" 尚未配置。',
     configureNow: "现在配置 {channel}？",
+  },
+  bug: {
+    intro: "🐛 ccpoke 错误报告",
+    descriptionPrompt: "简要描述遇到的问题",
+    descriptionPlaceholder: "例如：更新后通知停止工作",
+    cancelled: "已取消错误报告。",
+    collecting: "正在收集诊断信息...",
+    saved: "报告已保存 → {path}",
+    openingFolder: "正在打开文件位置...",
+    issueLink: "打开此链接创建 GitHub issue:",
+    attachHint: "📎 请在下方附上 bug-report .txt 文件",
+    instructions: "完成！\n\n  1. 打开上方 GitHub 链接\n  2. 将 .txt 文件拖入 issue\n  3. 提交",
+    noLogFile: "未找到日志文件 {path} — 仅包含诊断信息",
   },
 };
