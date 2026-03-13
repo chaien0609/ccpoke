@@ -7,6 +7,7 @@ import { SessionState, type SessionMap } from "../../tmux/session-map.js";
 import type { TmuxBridge } from "../../tmux/tmux-bridge.js";
 import { logger } from "../../utils/log.js";
 import { escapeMarkdownV2 } from "./escape-markdown.js";
+import { padMaxWidth } from "./telegram-sender.js";
 
 interface PendingPrompt {
   sessionId: string;
@@ -89,7 +90,9 @@ export class PromptHandler {
     const project = this.resolveProjectName(event.sessionId);
     const projectLine = project ? `\n_${escapeMarkdownV2(project)}_` : "";
 
-    const text = `${title}${projectLine}\n\n${body}\n\n${escapeMarkdownV2(t("prompt.elicitationReplyHint"))}`;
+    const text = padMaxWidth(
+      `${title}${projectLine}\n\n${body}\n\n${escapeMarkdownV2(t("prompt.elicitationReplyHint"))}`
+    );
 
     const sent = await this.bot
       .sendMessage(chatId, text, {

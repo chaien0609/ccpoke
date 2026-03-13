@@ -10,6 +10,7 @@ import {
 } from "./ask-question-keyboard-builder.js";
 import { AskQuestionTuiInjector, type InjectionAnswer } from "./ask-question-tui-injector.js";
 import { escapeMarkdownV2 } from "./escape-markdown.js";
+import { padMaxWidth } from "./telegram-sender.js";
 
 interface PendingQuestion {
   pendingId: number;
@@ -144,9 +145,11 @@ export class AskQuestionHandler {
     const header = formatQuestionHeader(pq, qIdx);
     const hint = q.multiSelect ? t("askQuestion.multiSelectHint") : t("askQuestion.selectHint");
     const optionList = formatOptionList(q);
-    const text = optionList
-      ? `${header}\n\n${escapeMarkdownV2(q.question)}\n\n${optionList}\n\n_${escapeMarkdownV2(hint)}_`
-      : `${header}\n\n${escapeMarkdownV2(q.question)}\n\n_${escapeMarkdownV2(hint)}_`;
+    const text = padMaxWidth(
+      optionList
+        ? `${header}\n\n${escapeMarkdownV2(q.question)}\n\n${optionList}\n\n_${escapeMarkdownV2(hint)}_`
+        : `${header}\n\n${escapeMarkdownV2(q.question)}\n\n_${escapeMarkdownV2(hint)}_`
+    );
 
     const keyboard = q.multiSelect
       ? buildMultiSelectKeyboard(pq.pendingId, qIdx, q, new Set())
@@ -191,7 +194,9 @@ export class AskQuestionHandler {
     if (msgId) {
       await this.bot
         .editMessageText(
-          `${formatQuestionHeader(pq, qIdx)}\n\n${escapeMarkdownV2(t("askQuestion.selected", { option: q.options[optIdx]!.label }))}`,
+          padMaxWidth(
+            `${formatQuestionHeader(pq, qIdx)}\n\n${escapeMarkdownV2(t("askQuestion.selected", { option: q.options[optIdx]!.label }))}`
+          ),
           { chat_id: query.message!.chat.id, message_id: msgId, parse_mode: "MarkdownV2" }
         )
         .catch(() => {});
@@ -271,7 +276,9 @@ export class AskQuestionHandler {
     if (msgId) {
       await this.bot
         .editMessageText(
-          `${formatQuestionHeader(pq, qIdx)}\n\n${escapeMarkdownV2(t("askQuestion.selectedMultiple", { options: labels.join(", ") }))}`,
+          padMaxWidth(
+            `${formatQuestionHeader(pq, qIdx)}\n\n${escapeMarkdownV2(t("askQuestion.selectedMultiple", { options: labels.join(", ") }))}`
+          ),
           { chat_id: query.message!.chat.id, message_id: msgId, parse_mode: "MarkdownV2" }
         )
         .catch(() => {});
@@ -304,7 +311,9 @@ export class AskQuestionHandler {
       logger.error({ err }, t("askQuestion.injectionFailed"));
       const chat = this.chatId();
       if (chat) {
-        await this.bot.sendMessage(chat, t("askQuestion.injectionFailed")).catch(() => {});
+        await this.bot
+          .sendMessage(chat, padMaxWidth(t("askQuestion.injectionFailed")))
+          .catch(() => {});
       }
     }
   }
@@ -325,7 +334,7 @@ export class AskQuestionHandler {
         /* best-effort submit */
       }
       this.clearPending(pq.sessionId);
-      await this.bot.sendMessage(chatId, t("askQuestion.allAnswered")).catch(() => {});
+      await this.bot.sendMessage(chatId, padMaxWidth(t("askQuestion.allAnswered"))).catch(() => {});
       return;
     }
     await new Promise((resolve) => setTimeout(resolve, 500));

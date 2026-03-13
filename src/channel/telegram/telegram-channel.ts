@@ -16,18 +16,18 @@ import type { SessionMap, TmuxSession } from "../../tmux/session-map.js";
 import type { SessionStateManager } from "../../tmux/session-state.js";
 import type { TmuxBridge } from "../../tmux/tmux-bridge.js";
 import { logger } from "../../utils/log.js";
-import { extractProseSnippet } from "../../utils/markdown.js";
+import { truncateMarkdown } from "../../utils/markdown.js";
 import { formatModelName } from "../../utils/stats-format.js";
 import { autoAcceptStartupPrompts, launchAgent } from "../agent-launcher.js";
 import type { ChannelDeps, NotificationChannel, NotificationData } from "../types.js";
 import { AskQuestionHandler } from "./ask-question-handler.js";
-import { escapeMarkdownV2, isInlineMessage, markdownToTelegramV2 } from "./escape-markdown.js";
+import { escapeMarkdownV2, markdownToTelegramV2 } from "./escape-markdown.js";
 import { PendingReplyStore } from "./pending-reply-store.js";
 import { PermissionRequestHandler } from "./permission-request-handler.js";
 import { formatProjectList } from "./project-list.js";
 import { PromptHandler } from "./prompt-handler.js";
 import { formatSessionList } from "./session-list.js";
-import { sendTelegramMessage } from "./telegram-sender.js";
+import { padMaxWidth, sendTelegramMessage } from "./telegram-sender.js";
 
 export class TelegramChannel implements NotificationChannel {
   private bot: TelegramBot;
@@ -120,9 +120,13 @@ export class TelegramChannel implements NotificationChannel {
 
     if (this.chatId) {
       this.bot
-        .sendMessage(this.chatId, t("bot.startupReady", { host: escapeMarkdownV2(hostname()) }), {
-          parse_mode: "MarkdownV2",
-        })
+        .sendMessage(
+          this.chatId,
+          padMaxWidth(t("bot.startupReady", { host: escapeMarkdownV2(hostname()) })),
+          {
+            parse_mode: "MarkdownV2",
+          }
+        )
         .catch(() => {});
     }
   }
@@ -172,12 +176,8 @@ export class TelegramChannel implements NotificationChannel {
     parts.push(`${titleLine}\n${metaLine}`);
 
     if (data.responseSummary) {
-      if (isInlineMessage(data.responseSummary)) {
-        parts.push(markdownToTelegramV2(data.responseSummary.trim()));
-      } else {
-        const snippet = extractProseSnippet(data.responseSummary, 150);
-        parts.push(escapeMarkdownV2(snippet + "..."));
-      }
+      const content = truncateMarkdown(data.responseSummary.trim(), 500);
+      parts.push(markdownToTelegramV2(content));
     } else {
       parts.push(escapeMarkdownV2("✅ Task done"));
     }
@@ -229,14 +229,14 @@ export class TelegramChannel implements NotificationChannel {
       }
 
       if (this.chatId === msg.chat.id) {
-        this.bot.sendMessage(msg.chat.id, t("bot.alreadyConnected"));
+        this.bot.sendMessage(msg.chat.id, padMaxWidth(t("bot.alreadyConnected")));
         return;
       }
 
       this.chatId = msg.chat.id;
       ConfigManager.saveChatState({ chat_id: this.chatId });
       logger.info(t("bot.registeredChatId", { chatId: msg.chat.id }));
-      this.bot.sendMessage(msg.chat.id, t("bot.ready"), { parse_mode: "MarkdownV2" });
+      this.bot.sendMessage(msg.chat.id, padMaxWidth(t("bot.ready")), { parse_mode: "MarkdownV2" });
     });
   }
 
@@ -338,7 +338,9 @@ export class TelegramChannel implements NotificationChannel {
 
         const sent = await this.bot.sendMessage(
           query.message.chat.id,
-          `💬 *${escapeMarkdownV2(session.project)}*\n${escapeMarkdownV2(t("chat.replyHint"))}`,
+          padMaxWidth(
+            `💬 *${escapeMarkdownV2(session.project)}*\n${escapeMarkdownV2(t("chat.replyHint"))}`
+          ),
           {
             parse_mode: "MarkdownV2",
             reply_to_message_id: query.message.message_id,
@@ -382,7 +384,7 @@ export class TelegramChannel implements NotificationChannel {
           ConfigManager.isOwner(this.cfg, msg.from?.id ?? 0)
         ) {
           await this.bot
-            .sendMessage(msg.chat.id, t("chat.directMessageHint"), {
+            .sendMessage(msg.chat.id, padMaxWidth(t("chat.directMessageHint")), {
               reply_to_message_id: msg.message_id,
             })
             .catch(() => {});
@@ -430,14 +432,14 @@ export class TelegramChannel implements NotificationChannel {
           logger.debug(`[Chat:result] elicitation injected → sessionId=${pending.sessionId}`);
           await this.bot.sendMessage(
             msg.chat.id,
-            t("prompt.responded", { project: pending.project })
+            padMaxWidth(t("prompt.responded", { project: pending.project }))
           );
           return;
         }
       }
 
       if (!this.stateManager) {
-        await this.bot.sendMessage(msg.chat.id, t("chat.sessionNotFound"));
+        await this.bot.sendMessage(msg.chat.id, padMaxWidth(t("chat.sessionNotFound")));
         return;
       }
 
@@ -445,16 +447,19 @@ export class TelegramChannel implements NotificationChannel {
 
       if ("sent" in result) {
         logger.debug(`[Chat:result] sent → sessionId=${pending.sessionId}`);
-        await this.bot.sendMessage(msg.chat.id, t("chat.sent", { project: pending.project }));
+        await this.bot.sendMessage(
+          msg.chat.id,
+          padMaxWidth(t("chat.sent", { project: pending.project }))
+        );
       } else if ("busy" in result) {
         logger.debug(`[Chat:result] busy → sessionId=${pending.sessionId}`);
-        await this.bot.sendMessage(msg.chat.id, t("chat.busy"));
+        await this.bot.sendMessage(msg.chat.id, padMaxWidth(t("chat.busy")));
       } else if ("sessionNotFound" in result) {
         logger.debug(`[Chat:result] sessionNotFound → sessionId=${pending.sessionId}`);
-        await this.bot.sendMessage(msg.chat.id, t("chat.sessionNotFound"));
+        await this.bot.sendMessage(msg.chat.id, padMaxWidth(t("chat.sessionNotFound")));
       } else if ("tmuxDead" in result) {
         logger.debug(`[Chat:result] tmuxDead → sessionId=${pending.sessionId}`);
-        await this.bot.sendMessage(msg.chat.id, t("chat.tmuxDead"));
+        await this.bot.sendMessage(msg.chat.id, padMaxWidth(t("chat.tmuxDead")));
       }
     });
   }
@@ -477,7 +482,9 @@ export class TelegramChannel implements NotificationChannel {
 
     const sent = await this.bot.sendMessage(
       query.message.chat.id,
-      `💬 *${escapeMarkdownV2(session.project)}*\n${escapeMarkdownV2(t("prompt.elicitationReplyHint"))}`,
+      padMaxWidth(
+        `💬 *${escapeMarkdownV2(session.project)}*\n${escapeMarkdownV2(t("prompt.elicitationReplyHint"))}`
+      ),
       {
         parse_mode: "MarkdownV2",
         reply_to_message_id: query.message.message_id,
@@ -505,7 +512,7 @@ export class TelegramChannel implements NotificationChannel {
     this.bot.onText(/\/sessions(?:\s|$)/, (msg) => {
       if (!ConfigManager.isOwner(this.cfg, msg.from?.id ?? 0)) return;
       if (!this.sessionMap) {
-        this.bot.sendMessage(msg.chat.id, t("sessions.empty")).catch(() => {});
+        this.bot.sendMessage(msg.chat.id, padMaxWidth(t("sessions.empty"))).catch(() => {});
         return;
       }
 
@@ -529,10 +536,12 @@ export class TelegramChannel implements NotificationChannel {
       const opts: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
       if (replyMarkup) opts.reply_markup = replyMarkup;
 
-      this.bot.sendMessage(msg.chat.id, text, opts).catch((err) => {
+      this.bot.sendMessage(msg.chat.id, padMaxWidth(text), opts).catch((err) => {
         logger.error({ err }, "[/sessions] MarkdownV2 sendMessage failed, retrying plain text");
         const plain = sessions.map((s) => `${s.project} (${s.state})`).join("\n");
-        this.bot.sendMessage(msg.chat.id, plain || t("sessions.empty")).catch(() => {});
+        this.bot
+          .sendMessage(msg.chat.id, padMaxWidth(plain || t("sessions.empty")))
+          .catch(() => {});
       });
     });
   }
@@ -547,7 +556,7 @@ export class TelegramChannel implements NotificationChannel {
       const opts: TelegramBot.SendMessageOptions = {};
       if (replyMarkup) opts.reply_markup = replyMarkup;
 
-      this.bot.sendMessage(msg.chat.id, text, opts).catch(() => {});
+      this.bot.sendMessage(msg.chat.id, padMaxWidth(text), opts).catch(() => {});
     });
   }
 
@@ -585,7 +594,7 @@ export class TelegramChannel implements NotificationChannel {
 
     await this.bot.sendMessage(
       query.message.chat.id,
-      t("projects.chooseAgent", { project: project.name }),
+      padMaxWidth(t("projects.chooseAgent", { project: project.name })),
       { reply_markup: { inline_keyboard: rows } }
     );
   }
@@ -639,13 +648,13 @@ export class TelegramChannel implements NotificationChannel {
       logger.info(`[Projects] started ${agentKey} in ${paneTarget} for ${project.name}`);
       await this.bot.sendMessage(
         query.message!.chat.id,
-        t("projects.started", { project: project.name })
+        padMaxWidth(t("projects.started", { project: project.name }))
       );
     } catch (err) {
       logger.error({ err }, `[Projects] failed to start panel for ${project.name}`);
       await this.bot.sendMessage(
         query.message.chat.id,
-        t("projects.startFailed", { project: project.name })
+        padMaxWidth(t("projects.startFailed", { project: project.name }))
       );
     }
   }
@@ -669,21 +678,31 @@ export class TelegramChannel implements NotificationChannel {
     );
 
     await this.bot.answerCallbackQuery(query.id);
-    await this.bot.sendMessage(query.message.chat.id, `*${escapeMarkdownV2(session.project)}*`, {
-      parse_mode: "MarkdownV2",
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: `💬 ${t("sessions.chatButton")}`, callback_data: `session_chat:${sessionId}` },
-            {
-              text: `🗑 ${t("sessions.closeButton")}`,
-              callback_data: `session_close:${sessionId}`,
-            },
-            { text: `❌ ${t("chat.cancelButton")}`, callback_data: `session_dismiss:${sessionId}` },
+    await this.bot.sendMessage(
+      query.message.chat.id,
+      padMaxWidth(`*${escapeMarkdownV2(session.project)}*`),
+      {
+        parse_mode: "MarkdownV2",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: `💬 ${t("sessions.chatButton")}`,
+                callback_data: `session_chat:${sessionId}`,
+              },
+              {
+                text: `🗑 ${t("sessions.closeButton")}`,
+                callback_data: `session_close:${sessionId}`,
+              },
+              {
+                text: `❌ ${t("chat.cancelButton")}`,
+                callback_data: `session_dismiss:${sessionId}`,
+              },
+            ],
           ],
-        ],
-      },
-    });
+        },
+      }
+    );
   }
   /** Send Escape to tmux pane to cancel running process */
   private async handleSessionDismiss(query: TelegramBot.CallbackQuery): Promise<void> {
@@ -724,18 +743,21 @@ export class TelegramChannel implements NotificationChannel {
     }
 
     await this.bot.answerCallbackQuery(query.id);
-    await this.bot.editMessageText(t("sessions.confirmClose", { project: session.project }), {
-      chat_id: query.message.chat.id,
-      message_id: query.message.message_id,
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: `✅ ${t("sessions.yes")}`, callback_data: `session_close_yes:${sessionId}` },
-            { text: `❌ ${t("sessions.no")}`, callback_data: `session_close_no:` },
+    await this.bot.editMessageText(
+      padMaxWidth(t("sessions.confirmClose", { project: session.project })),
+      {
+        chat_id: query.message.chat.id,
+        message_id: query.message.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: `✅ ${t("sessions.yes")}`, callback_data: `session_close_yes:${sessionId}` },
+              { text: `❌ ${t("sessions.no")}`, callback_data: `session_close_no:` },
+            ],
           ],
-        ],
-      },
-    });
+        },
+      }
+    );
   }
 
   /** Execute session close: kill tmux pane + unregister */
@@ -765,10 +787,13 @@ export class TelegramChannel implements NotificationChannel {
     logger.info(`[Sessions] closed session ${sessionId} (${session.project})`);
 
     await this.bot.answerCallbackQuery(query.id);
-    await this.bot.editMessageText(t("sessions.closed", { project: session.project }), {
-      chat_id: query.message.chat.id,
-      message_id: query.message.message_id,
-    });
+    await this.bot.editMessageText(
+      padMaxWidth(t("sessions.closed", { project: session.project })),
+      {
+        chat_id: query.message.chat.id,
+        message_id: query.message.message_id,
+      }
+    );
   }
 
   private patchProcessUpdate(): void {

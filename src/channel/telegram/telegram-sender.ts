@@ -8,6 +8,12 @@ const PAGINATION_FOOTER_RESERVE = 30;
 const SPLIT_LOOKBACK_RANGE = 200;
 const RETRY_DELAYS_MS = [1000, 2000, 4000];
 const MAX_RETRIES = RETRY_DELAYS_MS.length;
+const BRAILLE_BLANK = "\u2800";
+const MAX_WIDTH_PAD = `\n${BRAILLE_BLANK.repeat(40)}`;
+
+export function padMaxWidth(text: string): string {
+  return `${text}${MAX_WIDTH_PAD}`;
+}
 
 export async function sendTelegramMessage(
   bot: TelegramBot,
@@ -16,13 +22,17 @@ export async function sendTelegramMessage(
   responseUrl?: string,
   sessionId?: string
 ): Promise<void> {
-  const pages = splitMessage(text, TELEGRAM_MAX_MESSAGE_LENGTH - PAGINATION_FOOTER_RESERVE);
+  const pages = splitMessage(
+    text,
+    TELEGRAM_MAX_MESSAGE_LENGTH - PAGINATION_FOOTER_RESERVE - MAX_WIDTH_PAD.length
+  );
 
   for (let i = 0; i < pages.length; i++) {
     let content = pages[i]!;
     if (pages.length > 1) {
       content = `${content}\n\n_\\[${i + 1}/${pages.length}\\]_`;
     }
+    content += MAX_WIDTH_PAD;
 
     const isLastPage = i === pages.length - 1;
     const opts: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
@@ -31,7 +41,8 @@ export async function sendTelegramMessage(
       opts.reply_markup = buildResponseReplyMarkup(responseUrl, sessionId);
     }
 
-    await sendWithRetry(bot, chatId, content, pages[i]!, opts, isLastPage, responseUrl, sessionId);
+    const rawContent = pages[i]! + MAX_WIDTH_PAD;
+    await sendWithRetry(bot, chatId, content, rawContent, opts, isLastPage, responseUrl, sessionId);
   }
 }
 
