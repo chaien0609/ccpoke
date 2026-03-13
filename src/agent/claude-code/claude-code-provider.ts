@@ -1,11 +1,8 @@
 import { existsSync } from "node:fs";
 
-import { AGENT_START_COMMANDS } from "../../channel/agent-launcher.js";
-import { t } from "../../i18n/index.js";
 import { collectGitChanges } from "../../utils/git-collector.js";
 import { logger } from "../../utils/log.js";
 import { paths } from "../../utils/paths.js";
-import { isCommandAvailable } from "../../utils/shell.js";
 import {
   AGENT_DISPLAY_NAMES,
   AgentName,
@@ -24,11 +21,7 @@ export class ClaudeCodeProvider implements AgentProvider {
   readonly submitKeys = ["Enter"];
 
   detect(): boolean {
-    if (!existsSync(paths.claudeDir)) return false;
-    const startCommand = AGENT_START_COMMANDS[AgentName.ClaudeCode];
-    if (!startCommand) return false;
-    const binary = startCommand.split(" ")[0]!;
-    return isCommandAvailable(binary);
+    return existsSync(paths.claudeDir);
   }
 
   isHookInstalled(): boolean {
@@ -52,27 +45,28 @@ export class ClaudeCodeProvider implements AgentProvider {
       return this.createFallbackResult(raw);
     }
 
-    let summary = {
-      lastAssistantMessage: "",
-      model: "",
-    };
+    const obj = raw as unknown as Record<string, unknown>;
+    const bodyMessage =
+      typeof obj.last_assistant_message === "string" ? obj.last_assistant_message : "";
 
+    let transcriptModel = "";
+    let transcriptMessage = "";
     try {
-      summary = parseTranscript(raw.transcript_path);
-    } catch (err: unknown) {
-      logger.error({ err }, t("hook.transcriptFailed"));
+      const summary = parseTranscript(raw.transcript_path);
+      transcriptModel = summary.model;
+      transcriptMessage = summary.lastAssistantMessage;
+    } catch {
+      logger.debug("[ClaudeCode:transcript] parse failed, using body payload only");
     }
 
     const gitChanges = collectGitChanges(raw.cwd);
-
-    const obj = raw as unknown as Record<string, unknown>;
     const tmuxTarget = typeof obj.tmux_target === "string" ? obj.tmux_target : undefined;
 
     return {
       projectName: extractProjectName(raw.cwd, raw.transcript_path),
-      responseSummary: summary.lastAssistantMessage,
+      responseSummary: bodyMessage || transcriptMessage,
       gitChanges,
-      model: summary.model,
+      model: transcriptModel,
       agentSessionId: raw.session_id,
       cwd: raw.cwd,
       tmuxTarget,
@@ -85,9 +79,12 @@ export class ClaudeCodeProvider implements AgentProvider {
     const transcriptPath = typeof obj.transcript_path === "string" ? obj.transcript_path : "";
     const tmuxTarget = typeof obj.tmux_target === "string" ? obj.tmux_target : undefined;
 
+    const bodyMessage =
+      typeof obj.last_assistant_message === "string" ? obj.last_assistant_message : "";
+
     return {
       projectName: cwd ? extractProjectName(cwd, transcriptPath) : "unknown",
-      responseSummary: "",
+      responseSummary: bodyMessage,
       gitChanges: cwd ? collectGitChanges(cwd) : [],
       model: "",
       agentSessionId: typeof obj.session_id === "string" ? obj.session_id : undefined,

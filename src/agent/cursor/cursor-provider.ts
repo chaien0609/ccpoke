@@ -1,12 +1,9 @@
 import { existsSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
 
-import { AGENT_START_COMMANDS } from "../../channel/agent-launcher.js";
 import { t } from "../../i18n/index.js";
 import { collectGitChanges } from "../../utils/git-collector.js";
 import { logger } from "../../utils/log.js";
-import { isCommandAvailable } from "../../utils/shell.js";
+import { paths } from "../../utils/paths.js";
 import {
   AGENT_DISPLAY_NAMES,
   AgentName,
@@ -29,12 +26,7 @@ export class CursorProvider implements AgentProvider {
   readonly submitKeys = ["Enter"];
 
   detect(): boolean {
-    const hasCursorDir = existsSync(join(homedir(), ".cursor"));
-    if (!hasCursorDir) return false;
-    const startCommand = AGENT_START_COMMANDS[AgentName.Cursor];
-    if (!startCommand) return false;
-    const binary = startCommand.split(" ")[0]!;
-    return isCommandAvailable(binary);
+    return existsSync(paths.cursorDir);
   }
 
   isHookInstalled(): boolean {

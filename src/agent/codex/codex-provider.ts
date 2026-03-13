@@ -1,10 +1,8 @@
 import { existsSync } from "node:fs";
 
-import { AGENT_START_COMMANDS } from "../../channel/agent-launcher.js";
 import { collectGitChanges } from "../../utils/git-collector.js";
 import { logger } from "../../utils/log.js";
 import { paths } from "../../utils/paths.js";
-import { isCommandAvailable } from "../../utils/shell.js";
 import {
   AGENT_DISPLAY_NAMES,
   AgentName,
@@ -28,11 +26,7 @@ export class CodexProvider implements AgentProvider {
   readonly submitKeys = ["Escape", "Enter"];
 
   detect(): boolean {
-    if (!existsSync(paths.codexDir)) return false;
-    const startCommand = AGENT_START_COMMANDS[AgentName.Codex];
-    if (!startCommand) return false;
-    const binary = startCommand.split(" ")[0]!;
-    return isCommandAvailable(binary);
+    return existsSync(paths.codexDir);
   }
 
   isHookInstalled(): boolean {
