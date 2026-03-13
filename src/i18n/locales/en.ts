@@ -293,6 +293,7 @@ export const en: TranslationKeys = {
   },
   permissionRequest: {
     title: "Permission Request",
+    planTitle: "Plan Approval",
     allow: "Allow",
     deny: "Deny",
     allowed: "Allowed: {tool} → {summary}",
@@ -300,6 +301,7 @@ export const en: TranslationKeys = {
     sending: "Sending...",
     sessionExpired: "Session expired",
     injectionFailed: "Failed to send. Try in terminal.",
+    planApproved: "Plan approved: {option}",
   },
   projectCmd: {
     intro: "📁 Project Manager",

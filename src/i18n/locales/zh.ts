@@ -289,6 +289,7 @@ export const zh: TranslationKeys = {
   },
   permissionRequest: {
     title: "权限请求",
+    planTitle: "审批计划",
     allow: "允许",
     deny: "拒绝",
     allowed: "已允许: {tool} → {summary}",
@@ -296,6 +297,7 @@ export const zh: TranslationKeys = {
     sending: "发送中...",
     sessionExpired: "会话已过期",
     injectionFailed: "发送失败，请在终端操作。",
+    planApproved: "计划已批准: {option}",
   },
   projectCmd: {
     intro: "📁 项目管理",

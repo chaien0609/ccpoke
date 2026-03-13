@@ -275,6 +275,7 @@ export interface TranslationKeys {
   };
   permissionRequest: {
     title: string;
+    planTitle: string;
     allow: string;
     deny: string;
     allowed: string;
@@ -282,6 +283,7 @@ export interface TranslationKeys {
     sending: string;
     sessionExpired: string;
     injectionFailed: string;
+    planApproved: string;
   };
   projectCmd: {
     intro: string;

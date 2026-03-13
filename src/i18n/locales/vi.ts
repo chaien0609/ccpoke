@@ -293,6 +293,7 @@ export const vi: TranslationKeys = {
   },
   permissionRequest: {
     title: "Yêu cầu quyền",
+    planTitle: "Phê duyệt plan",
     allow: "Cho phép",
     deny: "Từ chối",
     allowed: "Đã cho phép: {tool} → {summary}",
@@ -300,6 +301,7 @@ export const vi: TranslationKeys = {
     sending: "Đang gửi...",
     sessionExpired: "Phiên đã hết hạn",
     injectionFailed: "Gửi thất bại. Thử trên terminal.",
+    planApproved: "Plan đã duyệt: {option}",
   },
   projectCmd: {
     intro: "📁 Quản lý Project",
