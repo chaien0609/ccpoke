@@ -37,8 +37,9 @@ export async function sendTelegramMessage(
     const isLastPage = i === pages.length - 1;
     const opts: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
 
-    if (isLastPage && responseUrl) {
-      opts.reply_markup = buildResponseReplyMarkup(responseUrl, sessionId);
+    if (isLastPage) {
+      const markup = buildResponseReplyMarkup(responseUrl, sessionId);
+      if (markup) opts.reply_markup = markup;
     }
 
     const rawContent = pages[i]! + MAX_WIDTH_PAD;
@@ -64,8 +65,9 @@ async function sendWithRetry(
         await bot.sendMessage(chatId, content, opts);
       } else if (attempt === 1) {
         const fallbackOpts: TelegramBot.SendMessageOptions = {};
-        if (isLastPage && responseUrl) {
-          fallbackOpts.reply_markup = buildResponseReplyMarkup(responseUrl, sessionId);
+        if (isLastPage) {
+          const markup = buildResponseReplyMarkup(responseUrl, sessionId);
+          if (markup) fallbackOpts.reply_markup = markup;
         }
         await bot.sendMessage(chatId, rawContent, fallbackOpts);
       } else {
@@ -131,19 +133,23 @@ function findSplitPoint(text: string, maxLen: number): number {
 }
 
 function buildResponseReplyMarkup(
-  responseUrl: string,
+  responseUrl?: string,
   sessionId?: string
-): TelegramBot.InlineKeyboardMarkup {
-  const viewText = `📖 ${t("bot.viewDetails")}`;
-  const viewButton = responseUrl.startsWith("https://")
-    ? { text: viewText, web_app: { url: responseUrl } }
-    : { text: viewText, url: responseUrl };
+): TelegramBot.InlineKeyboardMarkup | undefined {
+  const buttons: TelegramBot.InlineKeyboardButton[] = [];
 
-  const buttons: TelegramBot.InlineKeyboardButton[] = [viewButton];
+  if (responseUrl) {
+    const viewText = `📖 ${t("bot.viewDetails")}`;
+    const viewButton = responseUrl.startsWith("https://")
+      ? { text: viewText, web_app: { url: responseUrl } }
+      : { text: viewText, url: responseUrl };
+    buttons.push(viewButton);
+  }
 
   if (sessionId) {
     buttons.push({ text: "💬 Chat", callback_data: `chat:${sessionId}` });
   }
 
+  if (buttons.length === 0) return undefined;
   return { inline_keyboard: [buttons] };
 }
