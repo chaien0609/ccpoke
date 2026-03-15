@@ -9,6 +9,7 @@ import { escapeShellArg } from "../utils/shell.js";
 import { getTmuxBinary } from "./tmux-bridge.js";
 
 export interface TmuxPaneInfo {
+  paneId: string;
   target: string;
   paneTitle: string;
   cwd: string;
@@ -20,7 +21,7 @@ export interface AgentPaneInfo extends TmuxPaneInfo {
 }
 
 const FORMAT_STRING =
-  "#{session_name}:#{window_index}.#{pane_index}|#{pane_title}|#{pane_current_path}|#{pane_pid}";
+  "#{pane_id}|#{session_name}:#{window_index}.#{pane_index}|#{pane_title}|#{pane_current_path}|#{pane_pid}";
 const MAX_DESCENDANT_DEPTH = 8;
 
 interface ProcessEntry {
@@ -210,7 +211,7 @@ export function isAgentIdleByProcess(
 
 export interface AgentScanOutput {
   panes: AgentPaneInfo[];
-  allPaneTargets: Set<string>;
+  allPaneIds: Set<string>;
   tree: ProcessTree;
 }
 
@@ -268,25 +269,26 @@ export function scanAgentPanes(): AgentScanOutput {
       .split("\n")
       .filter((line) => line.length > 0);
 
-    const allPaneTargets = new Set<string>();
+    const allPaneIds = new Set<string>();
     const panes: AgentPaneInfo[] = [];
 
     for (const line of allLines) {
       const parts = line.split("|");
-      if (parts.length < 4) continue;
-      const target = parts[0]!;
-      allPaneTargets.add(target);
+      if (parts.length < 5) continue;
+      const paneId = parts[0]!;
+      const target = parts[1]!;
+      allPaneIds.add(paneId);
       const panePid = parts[parts.length - 1]!;
       const cwd = parts[parts.length - 2]!;
-      const paneTitle = parts.slice(1, parts.length - 2).join("|");
+      const paneTitle = parts.slice(2, parts.length - 2).join("|");
       const agentName = findAgentDescendant(panePid, tree);
       if (!agentName) continue;
-      panes.push({ target, paneTitle, cwd, panePid, agentName });
+      panes.push({ paneId, target, paneTitle, cwd, panePid, agentName });
     }
 
-    return { panes, allPaneTargets, tree };
+    return { panes, allPaneIds, tree };
   } catch {
-    return { panes: [], allPaneTargets: new Set(), tree: new Map() };
+    return { panes: [], allPaneIds: new Set(), tree: new Map() };
   }
 }
 
@@ -327,6 +329,37 @@ export function isPaneAlive(target: string): boolean {
   } catch {
     return false;
   }
+}
+
+export function queryPanePid(target: string): string | undefined {
+  try {
+    return (
+      execSync(
+        `${getTmuxBinary()} display-message -t ${escapeShellArg(target)} -p ${escapeShellArg("#{pane_pid}")}`,
+        { encoding: "utf-8", stdio: "pipe", timeout: 3000 }
+      ).trim() || undefined
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+export type PaneHealth =
+  | { status: "dead" }
+  | { status: "no_agent"; panePid: string }
+  | { status: "busy"; panePid: string }
+  | { status: "idle"; panePid: string };
+
+export function checkPaneHealth(target: string, tree?: ProcessTree): PaneHealth {
+  const panePid = queryPanePid(target);
+  if (!panePid) return { status: "dead" };
+
+  const processTree = tree ?? buildProcessTree();
+  if (!findAgentDescendant(panePid, processTree)) return { status: "no_agent", panePid };
+
+  if (!isAgentIdleByProcess(panePid, undefined, processTree)) return { status: "busy", panePid };
+
+  return { status: "idle", panePid };
 }
 
 export function detectModelFromCwd(cwd: string): string {

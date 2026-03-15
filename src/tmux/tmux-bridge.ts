@@ -149,28 +149,28 @@ export class TmuxBridge {
   createPane(sessionName: string, cwd: string): string {
     const bin = getTmuxBinary();
     const dir = escapeShellArg(cwd);
-    const formatArg = escapeShellArg("#{session_name}:#{window_index}.#{pane_index}");
+    const formatArg = escapeShellArg("#{pane_id}");
 
-    let paneTarget: string;
+    let paneId: string;
 
     if (!this.hasRunningSession(sessionName)) {
       const name = escapeShellArg(sessionName);
-      paneTarget = execSync(`${bin} new-session -d -s ${name} -c ${dir} -P -F ${formatArg}`, {
+      paneId = execSync(`${bin} new-session -d -s ${name} -c ${dir} -P -F ${formatArg}`, {
         encoding: "utf-8",
         stdio: "pipe",
         timeout: 5000,
       }).trim();
-      if (!paneTarget) paneTarget = `${sessionName}:0.0`;
+      if (!paneId) paneId = this.resolvePaneIdFallback(bin, sessionName);
     } else {
       const target = escapeShellArg(`${sessionName}:0`);
-      paneTarget = execSync(`${bin} split-window -t ${target} -c ${dir} -P -F ${formatArg}`, {
+      paneId = execSync(`${bin} split-window -t ${target} -c ${dir} -P -F ${formatArg}`, {
         encoding: "utf-8",
         stdio: "pipe",
         timeout: 5000,
       }).trim();
 
-      if (!paneTarget) {
-        paneTarget = this.resolveLastPane(bin, sessionName);
+      if (!paneId) {
+        paneId = this.resolveLastPane(bin, sessionName);
       }
 
       execSync(`${bin} select-layout -t ${target} tiled`, {
@@ -180,31 +180,51 @@ export class TmuxBridge {
     }
 
     if (isWindows()) {
-      this.changePaneCwd(paneTarget, cwd);
+      this.changePaneCwd(paneId, cwd);
     }
 
-    return paneTarget;
+    return paneId;
+  }
+
+  private resolvePaneIdFallback(bin: string, sessionName: string): string {
+    try {
+      const formatArg = escapeShellArg("#{pane_id}");
+      return (
+        execSync(`${bin} list-panes -t ${escapeShellArg(sessionName)} -F ${formatArg}`, {
+          encoding: "utf-8",
+          stdio: "pipe",
+          timeout: 3000,
+        })
+          .trim()
+          .split("\n")
+          .pop()! || "%0"
+      );
+    } catch {
+      return "%0";
+    }
   }
 
   private resolveLastPane(bin: string, sessionName: string): string {
     try {
-      const formatArg = escapeShellArg("#{session_name}:#{window_index}.#{pane_index}");
-      return execSync(`${bin} list-panes -t ${escapeShellArg(sessionName)} -F ${formatArg}`, {
-        encoding: "utf-8",
-        stdio: "pipe",
-        timeout: 3000,
-      })
-        .trim()
-        .split("\n")
-        .pop()!;
+      const formatArg = escapeShellArg("#{pane_id}");
+      return (
+        execSync(`${bin} list-panes -t ${escapeShellArg(sessionName)} -F ${formatArg}`, {
+          encoding: "utf-8",
+          stdio: "pipe",
+          timeout: 3000,
+        })
+          .trim()
+          .split("\n")
+          .pop()! || "%0"
+      );
     } catch {
-      return `${sessionName}:0.0`;
+      return "%0";
     }
   }
 
-  private changePaneCwd(paneTarget: string, cwd: string): void {
+  private changePaneCwd(paneId: string, cwd: string): void {
     const bin = getTmuxBinary();
-    const tgt = escapeShellArg(paneTarget);
+    const tgt = escapeShellArg(paneId);
 
     busyWaitMs(200);
     const commands = [`cd /d "${cwd}"`, "cls"];
