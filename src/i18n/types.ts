@@ -243,6 +243,10 @@ export interface TranslationKeys {
     sessionExpired: string;
     sessionNotFound: string;
     tmuxDead: string;
+    paneDead: string;
+    noAgent: string;
+    agentStarting: string;
+    agentNotRunning: string;
     sent: string;
     busy: string;
     cancelButton: string;
