@@ -1,32 +1,38 @@
-import { statSync, writeFileSync } from "node:fs";
+import { mkdirSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 
 import pino, { type TransportTargetOptions } from "pino";
 
-export const LOG_FILE = "/tmp/ccpoke-debug.log";
+export const LOG_FILE = join(tmpdir(), "ccpoke-debug.log");
 const MAX_LOG_SIZE = 2 * 1024 * 1024;
 
 const fileOnly = process.env.LOG_FILE_ONLY === "1";
 const level = process.env.LOG_LEVEL ?? "info";
 
-function truncateIfOversized(): void {
+function prepareLogFile(): boolean {
   try {
+    mkdirSync(dirname(LOG_FILE), { recursive: true });
     if (statSync(LOG_FILE).size > MAX_LOG_SIZE) {
       writeFileSync(LOG_FILE, "");
     }
+    return true;
   } catch {
-    return;
+    return false;
   }
 }
 
-truncateIfOversized();
+const fileReady = prepareLogFile();
 
-const targets: TransportTargetOptions[] = [
-  {
+const targets: TransportTargetOptions[] = [];
+
+if (fileReady) {
+  targets.push({
     target: "pino/file",
-    options: { destination: LOG_FILE, mkdir: false, append: true },
+    options: { destination: LOG_FILE, append: true },
     level: "debug",
-  },
-];
+  });
+}
 
 if (!fileOnly) {
   targets.push({
